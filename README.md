@@ -1,5 +1,5 @@
 this has the shittiest builder known to mankind
-capabilities
+<br>capabilities</br>
 - Grabbing chromium-based cookies (V10/V11 ONLY, V20 SUPPORT MIGHT EVENTUALLY COME)
 - Grabbing chromium-based passwords (V10/V11 ONLY)
 - Grabbing autofills (chromium and gecko/firefox)
