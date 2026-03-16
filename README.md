@@ -13,4 +13,4 @@ this has the shittiest builder known to mankind
 - Grabbing wifi passwords
 - Grabbing minecraft and steam sessions
 - Grabbing geometry dash sessions (planned)
-- Persistence (planned)
+- Persistence
