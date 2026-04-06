@@ -14,3 +14,8 @@ this has the shittiest builder known to mankind
 - Grabbing minecraft and steam sessions
 - Grabbing geometry dash sessions
 - Persistence
+
+
+changelog 2026-04-06:
+- fixed browser data collection not being optional
+- added geometry dash session 
