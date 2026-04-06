@@ -10,6 +10,7 @@ import zipfile
 import win32crypt
 import psutil
 import shutil
+import sys
 import json
 import requests
 import subprocess
