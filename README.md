@@ -12,5 +12,5 @@ this has the shittiest builder known to mankind
 - Posts info to discord/telegram
 - Grabbing wifi passwords
 - Grabbing minecraft and steam sessions
-- Grabbing geometry dash sessions (planned)
+- Grabbing geometry dash sessions
 - Persistence
