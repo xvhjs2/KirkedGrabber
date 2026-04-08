@@ -41,3 +41,5 @@ changelog 2026-04-07:
 - added v20 support (only for 10 browsers)
 - fixed the cookie expiry being hardcoded
 - added fluxer support in builder
+- fixed persistence blocking the other functions
+
