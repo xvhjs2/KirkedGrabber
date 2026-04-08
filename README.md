@@ -1,7 +1,7 @@
 NOTE TO GITHUB. THIS IS FOR EDUCATIONAL PURPOSES ONLY. don't smite ts pls
 
 this has the shittiest builder known to mankind. if you're experiencing any difficulties with the builder then just paste this into config.py and edit it
-```
+```python
 type = 'discord' #or 'telegram'
 hook = 'replace_with_webhook_url' 
 tg_token = 'replace_with_telegram_bot_token' 
