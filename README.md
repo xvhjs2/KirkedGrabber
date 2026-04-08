@@ -1,7 +1,7 @@
 this has the shittiest builder known to mankind
 <br>capabilities</br>
-- Grabbing chromium-based cookies (V10/V11 ONLY, V20 SUPPORT **MIGHT** EVENTUALLY COME)
-- Grabbing chromium-based passwords (V10/V11 ONLY)
+- Grabbing chromium-based cookies (V10/V11/V20)
+- Grabbing chromium-based passwords (V10/V11/V20)
 - Grabbing autofills (chromium and gecko/firefox)
 - Grabbing browsing history (chromium and gecko/firefox)
 - Grabbing gecko/firefox based cookies
@@ -19,3 +19,7 @@ this has the shittiest builder known to mankind
 changelog 2026-04-06:
 - fixed browser data collection not being optional
 - added geometry dash session 
+
+changelog 2026-04-07:
+- added v20 support for (only for 10 browsers)
+- fixed the cookie expiry part
