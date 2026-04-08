@@ -176,7 +176,7 @@ def derive_v20_master_key(parsed_data: dict, key_name) -> bytes:
 def decrypt_v20_value(encrypted_value: bytes, master_key: bytes) -> str:
     try:
         if not encrypted_value or encrypted_value[:3] != b'v20':
-            return "NOT_V20"
+            return None
         iv = encrypted_value[3:15]
         payload = encrypted_value[15:-16]
         tag = encrypted_value[-16:]
@@ -185,12 +185,12 @@ def decrypt_v20_value(encrypted_value: bytes, master_key: bytes) -> str:
         return decrypted[32:].decode('utf-8', errors='replace')
     except Exception as e:
         print(f"Error decrypting v20 value: {str(e)}", "ERROR")
-        return "DECRYPT_FAILED"
+        return None
 
 def decrypt_v20_password(encrypted_value: bytes, master_key: bytes) -> str:
     try:
         if not encrypted_value or encrypted_value[:3] != b'v20':
-            return "NOT_V20"
+            return None
         iv = encrypted_value[3:15]
         payload = encrypted_value[15:-16]
         tag = encrypted_value[-16:]
@@ -199,7 +199,8 @@ def decrypt_v20_password(encrypted_value: bytes, master_key: bytes) -> str:
         return decrypted.decode('utf-8', errors='replace')
     except Exception as e:
         print(f"Error decrypting v20 password: {str(e)}", "ERROR")
-        return "DECRYPT_FAILED"
+        return None
+        
 def removedir(dir_):
     try:
         shutil.rmtree(dir_)
