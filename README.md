@@ -21,5 +21,5 @@ changelog 2026-04-06:
 - added geometry dash session 
 
 changelog 2026-04-07:
-- added v20 support for (only for 10 browsers)
-- fixed the cookie expiry part
+- added v20 support (only for 10 browsers)
+- fixed the cookie expiry being hardcoded
