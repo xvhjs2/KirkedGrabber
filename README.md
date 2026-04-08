@@ -38,7 +38,7 @@ changelog 2026-04-06:
 - added geometry dash session 
 
 changelog 2026-04-07:
-- added v20 support (only for 10 browsers)
+- added v20 support; although i kinda stole it (only for 10 browsers)
 - fixed the cookie expiry being hardcoded
 - added fluxer support in builder
 - fixed persistence blocking the other functions
