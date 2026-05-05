@@ -43,6 +43,6 @@ changelog 2026-04-07:
 - added fluxer support in builder
 - fixed persistence blocking the other functions
 
-changelog 2026-06-02:
+changelog 2026-05-02:
 - fixed cookie netscape format
 
