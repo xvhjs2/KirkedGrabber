@@ -90,8 +90,9 @@ class Options:
         [02] Toggle Browsing Data
         [03] Toggle Discord Account Grabber
         [04] Toggle Game Session Grabber
-        [05] Save Settings
-        [06] Compile
+        [05] Toggle Webcam Grabber
+        [06] Save Settings
+        [07] Compile
         '''
         self.opti = Colorate.Horizontal(Colors.blue_to_purple, self.opt, 1)
         return self.opti
