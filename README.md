@@ -56,7 +56,7 @@ changelog 2026-05-20:
 changelog 2026-05-26:
 - added config.vdf for steam session stealing
 
-changelog 2026-06-29:
+changelog 2026-05-29:
 - remade system info logic
 - added webcam logging
 - added clipboard logging
