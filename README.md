@@ -49,3 +49,9 @@ changelog 2026-04-07:
 changelog 2026-05-02:
 - fixed cookie netscape format
 
+changelog 2026-06-29:
+- remade system info logic
+- added webcam logging
+- added clipboard logging
+- added process logging
+- fixed an error where if the c2 is telegram, it wouldn't show the full config display
