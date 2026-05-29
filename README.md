@@ -62,3 +62,4 @@ changelog 2026-05-29:
 - added clipboard logging
 - added process logging
 - fixed an error where if the c2 is telegram, it wouldn't show the full config display
+- computer name and username now uses environment variables
