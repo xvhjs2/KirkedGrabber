@@ -33,7 +33,11 @@ credits to https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https
 - Persistence
 - Webhook/Telegram Bot encryption (planned)
 - Posts info to discord/telegram
-
+- Gets webcam
+- Gets MAC addresses
+- Gets processes
+- Blocks antivirus websites (planned)
+- VM Detection (planned)
 
 i also plan on improving the builder and not making it console based
 
