@@ -34,7 +34,7 @@ credits to https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https
 - Webhook/Telegram Bot encryption (planned)
 - Posts info to discord/telegram
 - Gets webcam
-- Gets MAC addresses
+- Gets MAC addresses (planned)
 - Gets processes
 - Blocks antivirus websites (planned)
 - VM Detection (planned)
