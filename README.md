@@ -65,5 +65,10 @@ changelog 2026-05-29:
 - added webcam logging
 - added clipboard logging
 - added process logging
-- fixed an error where if the c2 is telegram, it wouldn't show the full config display
+- fixed a bug where if the c2 is telegram-based, it wouldn't show the full config display
 - computer name and username now uses environment variables
+
+changelog 2026-06-01:
+- added antivirus website blocking
+- added compatibility for older versions of chromium browsers
+- added anti-vm
