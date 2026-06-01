@@ -91,7 +91,7 @@ class Options:
         [03] Toggle Discord Account Grabber
         [04] Toggle Game Session Grabber
         [05] Toggle Webcam Grabber
-        [06] Toggle Website Blocking
+        [06] Block Anti-Virus Websites
         [07] Toggle Anti-VM
         [08] Save Settings
         [09] Compile
