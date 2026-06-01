@@ -91,8 +91,10 @@ class Options:
         [03] Toggle Discord Account Grabber
         [04] Toggle Game Session Grabber
         [05] Toggle Webcam Grabber
-        [06] Save Settings
-        [07] Compile
+        [06] Toggle Website Blocking
+        [07] Toggle Anti-VM
+        [08] Save Settings
+        [09] Compile
         '''
         self.opti = Colorate.Horizontal(Colors.blue_to_purple, self.opt, 1)
         return self.opti
