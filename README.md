@@ -1,4 +1,4 @@
-NOTE TO GITHUB. THIS IS FOR EDUCATIONAL PURPOSES ONLY. don't smite ts pls
+NOTE TO GITHUB. THIS IS FOR EDUCATIONAL PURPOSES ONLY. don't take ts down pls
 
 this has the shittiest builder known to mankind. if you're experiencing any difficulties with the builder then just paste this into config.py and edit it
 ```python
