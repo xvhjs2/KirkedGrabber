@@ -12,6 +12,8 @@ games = False #(or True)
 webcam = False #(or true)
 blocksites = False #(or true)
 antivm = False #(or true)
+uacbypass = False #(or true)
+
 ```
 then type this in command prompt
 ```
