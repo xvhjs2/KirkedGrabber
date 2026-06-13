@@ -8,7 +8,7 @@ import json
 
 from resources.console import *
 
-os.system('mode con: cols=150 lines=50')
+os.system('mode con: cols=150 lines=45')
 
 configfile = "conf/config.py"
 configjson = 'conf/config.json'
@@ -22,7 +22,8 @@ config = {
     "games": False,
     "webcam": False,
     "blocksites": False,
-    "antivm": False
+    "antivm": False,
+    "uacbypass": False
 }
 
 def load(file):
@@ -69,6 +70,7 @@ def fetchsettings():
     grabwebcam = config['webcam']
     blocksites = config['blocksites']
     antivm = config['antivm']
+    uacbypass = config['uacbypass']
     if c2type == 'discord':
         print('''Settings
         
@@ -80,7 +82,8 @@ def fetchsettings():
     Grab webcam: {}
     Block websites: {}
     Anti-VM: {}
-    '''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm))
+    UAC Bypass: {}
+    '''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm, uacbypass))
     elif c2type == 'telegram':
         print('''Settings
         
@@ -92,14 +95,15 @@ def fetchsettings():
     Grab webcam: {}
     Block websites: {}
     Anti-VM: {}
-    '''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm))
+    UAC Bypass: {}
+    '''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm, uacbypass))
 
 def menu():
     global config
     asc = Ascii()
     print(asc.ascii())
     print(Options().options())
-    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'CollectWebcam', 'BlockWebsites', 'AntiVM', 'SaveSettings', 'Compile']
+    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'CollectWebcam', 'BlockWebsites', 'AntiVM', 'UACBypass', 'SaveSettings', 'Compile']
     
     fetchsettings()
     opts = {str(i + 1): name for i, name in enumerate(options)}
@@ -161,6 +165,11 @@ def menu():
 
             elif name == 'AntiVM':
                 config['antivm'] = not config['antivm']
+                cls()
+                menu()
+
+            elif name == 'UACBypass':
+                config['uacbypass'] = not config['uacbypass']
                 cls()
                 menu()
 
