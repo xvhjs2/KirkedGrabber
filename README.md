@@ -74,3 +74,9 @@ changelog 2026-06-01:
 - added antivirus website blocking
 - added compatibility for older versions of chromium browsers
 - added anti-vm
+
+changelog 2026-06-12:
+- added uac bypass
+- fixed an error where anti vm didn't work which crashes the entire script
+- updated persistence
+- updated block sites
