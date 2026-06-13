@@ -1,5 +1,7 @@
 NOTE TO GITHUB. THIS IS FOR EDUCATIONAL PURPOSES ONLY. don't take ts down pls
 
+use python versions 3.10 or 3.11 or this might not work
+
 this has the shittiest builder known to mankind. if you're experiencing any difficulties with the builder then just paste this into config.py and edit it
 ```python
 type = 'discord' #or 'telegram'
@@ -38,10 +40,11 @@ credits to https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https
 - Webhook/Telegram Bot encryption (planned)
 - Posts info to discord/telegram
 - Gets webcam
-- Gets MAC addresses (planned)
+- Gets MAC addresses
 - Gets processes
-- Blocks antivirus websites (planned)
-- VM Detection (planned)
+- Blocks antivirus websites
+- VM Detection
+- 
 
 i also plan on improving the builder and not making it console based
 
@@ -82,3 +85,6 @@ changelog 2026-06-12:
 - fixed an error where anti vm didn't work which crashes the entire script
 - updated persistence
 - updated block sites
+
+changelog 2026-06-13:
+- added the uac bypass file
