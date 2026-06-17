@@ -88,3 +88,6 @@ changelog 2026-06-12:
 
 changelog 2026-06-13:
 - added the uac bypass file
+
+changelog 2026-06-16:
+- added roblox cookie stealing
