@@ -91,3 +91,4 @@ changelog 2026-06-13:
 
 changelog 2026-06-16:
 - added roblox cookie stealing
+- added unix time conversion for chromium cookies (its about time i did that)
