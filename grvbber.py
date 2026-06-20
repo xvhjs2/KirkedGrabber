@@ -617,6 +617,7 @@ def anti_vm():
         'vmwaretray.exe', 
         'ida64.exe', 
         'ollydbg.exe', 
+        'tshark.exe',
         'pestudio.exe', 
         'vgauthservice.exe', 
         'vmacthlp.exe', 
