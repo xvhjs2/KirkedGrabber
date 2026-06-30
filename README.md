@@ -1,6 +1,6 @@
 NOTE TO GITHUB. THIS IS FOR EDUCATIONAL PURPOSES ONLY. don't take ts down pls
 
-use python versions 3.10 or 3.11 or this might not work
+use python versions 3.10 or 3.11 or this might not work properly
 
 this has the shittiest builder known to mankind. if you're experiencing any difficulties with the builder then just paste this into config.py and edit it
 ```python
@@ -96,3 +96,5 @@ changelog 2026-06-16:
 changelog 2026-06-20:
 _ made the file size smaller if cv2 isn't used (capture webcam is off)
 
+changelog 2026-06-30:
+- screenshotting no longer requires Pillow (smaller file size?)
