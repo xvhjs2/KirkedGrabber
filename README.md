@@ -94,7 +94,7 @@ changelog 2026-06-16:
 - added unix time conversion for chromium cookies (its about time i did that)
   
 changelog 2026-06-20:
-_ made the file size smaller if cv2 isn't used (capture webcam is off)
+- made the file size smaller if cv2 isn't used (capture webcam is off)
 
 changelog 2026-06-30:
 - screenshotting no longer requires Pillow (smaller file size?)
