@@ -106,3 +106,4 @@ changelog 2026-06-30:
 changelog 2026-07-09:
 - added support for saved credit cards
 - fixed persistence
+- webcam now uses avicap32 instead of cv2
