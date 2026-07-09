@@ -1,4 +1,5 @@
 NOTE TO GITHUB. THIS IS FOR EDUCATIONAL PURPOSES ONLY. don't take ts down pls
+note about cookies: there is a way to decrypt them for version 144+ but i don't think i can do it
 
 use python versions 3.10 or 3.11 or this might not work properly
 
@@ -98,3 +99,7 @@ changelog 2026-06-20:
 
 changelog 2026-06-30:
 - screenshotting no longer requires Pillow (smaller file size?)
+
+changelog 2026-07-09:
+- added support for saved credit cards
+- fixed persistence
