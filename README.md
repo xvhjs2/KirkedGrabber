@@ -29,6 +29,7 @@ credits to https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https
 <br>capabilities</br>
 - Gets cookies (chromium/firefox)
 - Gets passwords (chromium/firefox)
+- Gets cards (chromium)
 - Gets autofills (chromium/firefox)
 - Gets browsing history (chromium/firefox)
 - Gets discord accounts (no billing info and subscription info)
@@ -45,7 +46,6 @@ credits to https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https
 - Gets processes
 - Blocks antivirus websites
 - VM Detection
-- 
 
 i also plan on improving the builder and not making it console based
 
