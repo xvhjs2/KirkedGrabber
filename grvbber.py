@@ -500,7 +500,6 @@ def anti_vm():
     vm_usernames = ['wdagutilityaccount', 'wdc', 'vboxuser', 'vmwareuser', 'administrator', 'user', 'test', 'guest', 'server', 'abby', 'peter wilson', 'hmarc', 'patex', 'john-pc', 'rdhj0cnfevzx', 'keecfmwgj', 'frank', '8nl0colnq5bq', 'lisa', 'john', 'george', 'pxmduopvyx', '8vizsm', 'w0fjuovmccp5a', 'lmvwjj9b', 'pqonjhvwexss', '3u2v9m8', 'julia', 'heuerzl', 'harry johnson', 'j.seance', 'a.monaldo', 'tvm']
     sandboxuuids = [
         '1D1FB0BB-21B9-4FC0-B017-A4DADA231E17',
-        'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF',
         '20DC9FCF-04F2-46DB-866A-8B094D51E731',
         '4E29518F-71BD-4AD3-AEAA-B9B737A21F6F',
         'CF39B3BF-A04E-44F3-80E5-56A5937FA2A9',
