@@ -32,26 +32,32 @@ https://github.com/yanaksalvo/Browser-Data-Cookie-Extractor and https://github.c
 https://github.com/mategol/PySilon for uac bypass
 
 <br>capabilities</br>
-- Gets cookies (chromium/firefox)
-- Gets passwords (chromium/firefox)
-- Gets cards (chromium)
-- Gets autofills (chromium/firefox)
-- Gets browsing history (chromium/firefox)
-- Gets discord accounts (no billing info and subscription info)
-- Gets system information and ip address
-- Screenshots the system
-- Gets wifi passwords
-- Gets minecraft and steam sessions (no session validating yet)
-- Gets geometry dash sessions
-- Persistence
+```
+✅: Works 100%
+⚠: Might work/Depends on which version of the program is used
+❌: Doesn't work
+
+
+- Gets cookies (⚠)
+- Gets passwords (⚠)
+- Gets cards (⚠)
+- Gets autofills (✅)
+- Gets browsing history (✅)
+- Gets discord accounts (no billing info and subscription info) (✅)
+- Gets system information and ip address (✅)
+- Screenshots the system (✅)
+- Gets wifi passwords (✅)
+- Gets minecraft and steam sessions (no session validating yet) (✅)
+- Gets geometry dash sessions (✅)
+- Persistence (✅)
 - Webhook/Telegram Bot encryption (planned)
 - Posts info to discord/telegram
-- Gets webcam
-- Gets MAC addresses
-- Gets processes
-- Blocks antivirus websites
-- VM Detection
-
+- Gets webcam (✅ if computer has a webcam, otherwise ❌)
+- Gets MAC addresses (✅)
+- Gets processes (✅)
+- Blocks antivirus websites (✅)
+- VM Detection (✅)
+```
 i also plan on improving the builder and not making it console based
 
 changelog 2026-04-06:
@@ -83,8 +89,8 @@ changelog 2026-05-29:
 
 changelog 2026-06-01:
 - added antivirus website blocking
-- added compatibility for older versions of chromium browsers
-- added anti-vm
+- added compatibility for older versions of chromium browsers 
+- added anti-vm/vm detection
 
 changelog 2026-06-12:
 - added uac bypass
@@ -108,4 +114,4 @@ changelog 2026-06-30:
 changelog 2026-07-09:
 - added support for saved credit cards
 - fixed persistence
-- webcam now uses avicap32 instead of cv2
+- webcam now uses avicap32 (ctypes) instead of cv2
