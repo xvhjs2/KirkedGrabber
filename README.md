@@ -34,7 +34,7 @@ https://github.com/mategol/PySilon for uac bypass
 <br>capabilities</br>
 ```
 ✅: Works 100%
-⚠: Might work/Depends on which version of the program is used
+⚠: Might work/Depends on the program/which version of the program is used
 ❌: Doesn't work
 
 
