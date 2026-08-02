@@ -94,8 +94,9 @@ class Options:
         [06] Block Anti-Virus Websites
         [07] Toggle Anti-VM
         [08] Toggle UAC Bypass
-        [09] Save Settings
-        [10] Compile
+        [09] Toggle Personal Files Collection
+        [10] Save Settings
+        [11] Compile
         '''
         self.opti = Colorate.Horizontal(Colors.blue_to_purple, self.opt, 1)
         return self.opti
